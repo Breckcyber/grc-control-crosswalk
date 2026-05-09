@@ -1,0 +1,35 @@
+framework: NIST CSF 2.0
+version: "2.0"
+last_updated: "2026-05-08"
+source: "https://www.nist.gov/cyberframework"
+
+controls:
+  - id: GV.OC-01
+    name: "Organizational mission understood"
+    description: "The organizational mission is understood and informs cybersecurity risk management"
+    function: GOVERN
+    category: Organizational Context
+
+  - id: GV.PO-01
+    name: "Cybersecurity policy"
+    description: "Policy for managing cybersecurity risks is established based on organizational context"
+    function: GOVERN
+    category: Policy
+
+  - id: GV.RM-01
+    name: "Risk management objectives"
+    description: "Risk management objectives are established and agreed upon by organizational stakeholders"
+    function: GOVERN
+    category: Risk Management Strategy
+
+  - id: ID.AM-01
+    name: "Asset inventory - hardware"
+    description: "Inventories of hardware managed by the organization are maintained"
+    function: IDENTIFY
+    category: Asset Management
+
+  - id: ID.RA-01
+    name: "Vulnerability identification"
+    description: "Vulnerabilities in assets are identified, validated, and recorded"
+    function: IDENTIFY
+    category: Risk Assessment
