@@ -18,14 +18,13 @@ Takes a control from any of five frameworks and instantly returns the equivalent
 
 ## Frameworks Covered
 
-| Framework | Version | Controls Mapped |
-|-----------|---------|-----------------|
-| NIST CSF | 2.0 | 30+ |
-| ISO 27001 | 2022 | 25+ |
-| ISO/IEC 42001 | 2023 | 25+ |
-| NIST AI RMF | 1.0 | 20+ |
-| EU AI Act | 2024 | Key articles |
-
+| Framework | Version | Status | Controls Loaded |
+|-----------|---------|--------|----------------|
+| NIST CSF | 2.0 | Complete | 106 |
+| ISO/IEC 27001 | 2022 | Complete | 93 |
+| ISO/IEC 42001 | 2023 | Planned | — |
+| NIST AI RMF | 1.0 | Planned | — |
+| EU AI Act | 2024 | Planned | — |
 ## Who This Is For
 
 - GRC analysts conducting cross-framework gap assessments
