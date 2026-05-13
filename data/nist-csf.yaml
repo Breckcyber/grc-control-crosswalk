@@ -1,35 +1,708 @@
 framework: NIST CSF 2.0
 version: "2.0"
-last_updated: "2026-05-08"
+last_updated: "2026-05-11"
 source: "https://www.nist.gov/cyberframework"
+description: "NIST Cybersecurity Framework 2.0 — full 106-subcategory set across 6 Functions and 22 Categories"
+
+functions:
+  - id: GV
+    name: GOVERN
+    description: "The organization's cybersecurity risk management strategy, expectations, and policy are established, communicated, and monitored"
+  - id: ID
+    name: IDENTIFY
+    description: "The organization's current cybersecurity risks are understood"
+  - id: PR
+    name: PROTECT
+    description: "Safeguards to manage the organization's cybersecurity risks are used"
+  - id: DE
+    name: DETECT
+    description: "Possible cybersecurity attacks and compromises are found and analyzed"
+  - id: RS
+    name: RESPOND
+    description: "Actions regarding a detected cybersecurity incident are taken"
+  - id: RC
+    name: RECOVER
+    description: "Assets and operations affected by a cybersecurity incident are restored"
 
 controls:
+  # ==================================================
+  # GOVERN (GV) — 31 subcategories across 6 categories
+  # ==================================================
+
+  # GV.OC — Organizational Context
   - id: GV.OC-01
     name: "Organizational mission understood"
     description: "The organizational mission is understood and informs cybersecurity risk management"
     function: GOVERN
     category: Organizational Context
 
-  - id: GV.PO-01
-    name: "Cybersecurity policy"
-    description: "Policy for managing cybersecurity risks is established based on organizational context"
+  - id: GV.OC-02
+    name: "Stakeholder expectations understood"
+    description: "Internal and external stakeholders are understood, and their needs and expectations regarding cybersecurity risk management are understood and considered"
     function: GOVERN
-    category: Policy
+    category: Organizational Context
 
+  - id: GV.OC-03
+    name: "Legal and regulatory requirements managed"
+    description: "Legal, regulatory, and contractual requirements regarding cybersecurity — including privacy and civil liberties obligations — are understood and managed"
+    function: GOVERN
+    category: Organizational Context
+
+  - id: GV.OC-04
+    name: "Critical objectives, capabilities, and services communicated"
+    description: "Critical objectives, capabilities, and services that external stakeholders depend on or expect from the organization are understood and communicated"
+    function: GOVERN
+    category: Organizational Context
+
+  - id: GV.OC-05
+    name: "Outcomes, capabilities, and services dependencies"
+    description: "Outcomes, capabilities, and services that the organization depends on are understood and communicated"
+    function: GOVERN
+    category: Organizational Context
+
+  # GV.RM — Risk Management Strategy
   - id: GV.RM-01
-    name: "Risk management objectives"
-    description: "Risk management objectives are established and agreed upon by organizational stakeholders"
+    name: "Risk management objectives established"
+    description: "Risk management objectives are established and agreed to by organizational stakeholders"
     function: GOVERN
     category: Risk Management Strategy
 
+  - id: GV.RM-02
+    name: "Risk appetite and tolerance statements"
+    description: "Risk appetite and risk tolerance statements are established, communicated, and maintained"
+    function: GOVERN
+    category: Risk Management Strategy
+
+  - id: GV.RM-03
+    name: "Cybersecurity risk management integration"
+    description: "Cybersecurity risk management activities and outcomes are included in enterprise risk management processes"
+    function: GOVERN
+    category: Risk Management Strategy
+
+  - id: GV.RM-04
+    name: "Strategic direction for risk response"
+    description: "Strategic direction that describes appropriate risk response options is established and communicated"
+    function: GOVERN
+    category: Risk Management Strategy
+
+  - id: GV.RM-05
+    name: "Communication lines for risk"
+    description: "Lines of communication across the organization are established for cybersecurity risks, including risks from suppliers and other third parties"
+    function: GOVERN
+    category: Risk Management Strategy
+
+  - id: GV.RM-06
+    name: "Standardized methods for risk"
+    description: "A standardized method for calculating, documenting, categorizing, and prioritizing cybersecurity risks is established and communicated"
+    function: GOVERN
+    category: Risk Management Strategy
+
+  - id: GV.RM-07
+    name: "Strategic opportunities communicated"
+    description: "Strategic opportunities — i.e., positive risks — are characterized and are included in organizational cybersecurity risk discussions"
+    function: GOVERN
+    category: Risk Management Strategy
+
+  # GV.RR — Roles, Responsibilities, and Authorities
+  - id: GV.RR-01
+    name: "Leadership accountability"
+    description: "Organizational leadership is responsible and accountable for cybersecurity risk and fosters a culture that is risk-aware, ethical, and continually improving"
+    function: GOVERN
+    category: Roles, Responsibilities, and Authorities
+
+  - id: GV.RR-02
+    name: "Roles, responsibilities, and authorities"
+    description: "Roles, responsibilities, and authorities related to cybersecurity risk management are established, communicated, understood, and enforced"
+    function: GOVERN
+    category: Roles, Responsibilities, and Authorities
+
+  - id: GV.RR-03
+    name: "Resources allocated"
+    description: "Adequate resources are allocated commensurate with the cybersecurity risk strategy, roles, responsibilities, and policies"
+    function: GOVERN
+    category: Roles, Responsibilities, and Authorities
+
+  - id: GV.RR-04
+    name: "Cybersecurity in HR"
+    description: "Cybersecurity is included in human resources practices"
+    function: GOVERN
+    category: Roles, Responsibilities, and Authorities
+
+  # GV.PO — Policy
+  - id: GV.PO-01
+    name: "Cybersecurity policy"
+    description: "Policy for managing cybersecurity risks is established based on organizational context, cybersecurity strategy, and priorities and is communicated and enforced"
+    function: GOVERN
+    category: Policy
+
+  - id: GV.PO-02
+    name: "Policy reviewed and updated"
+    description: "Policy for managing cybersecurity risks is reviewed, updated, communicated, and enforced to reflect changes in requirements, threats, technology, and organizational mission"
+    function: GOVERN
+    category: Policy
+
+  # GV.OV — Oversight
+  - id: GV.OV-01
+    name: "Cybersecurity strategy outcomes"
+    description: "Cybersecurity risk management strategy outcomes are reviewed to inform and adjust strategy and direction"
+    function: GOVERN
+    category: Oversight
+
+  - id: GV.OV-02
+    name: "Strategy reviewed and adjusted"
+    description: "The cybersecurity risk management strategy is reviewed and adjusted to ensure coverage of organizational requirements and risks"
+    function: GOVERN
+    category: Oversight
+
+  - id: GV.OV-03
+    name: "Performance monitored"
+    description: "Organizational cybersecurity risk management performance is evaluated and reviewed for adjustments needed"
+    function: GOVERN
+    category: Oversight
+
+  # GV.SC — Cybersecurity Supply Chain Risk Management
+  - id: GV.SC-01
+    name: "Supply chain risk management program"
+    description: "A cybersecurity supply chain risk management program, strategy, objectives, policies, and processes are established and agreed to by organizational stakeholders"
+    function: GOVERN
+    category: Cybersecurity Supply Chain Risk Management
+
+  - id: GV.SC-02
+    name: "Supply chain roles defined"
+    description: "Cybersecurity roles and responsibilities for suppliers, customers, and partners are established, communicated, and coordinated internally and externally"
+    function: GOVERN
+    category: Cybersecurity Supply Chain Risk Management
+
+  - id: GV.SC-03
+    name: "Supply chain in ERM"
+    description: "Cybersecurity supply chain risk management is integrated into cybersecurity and enterprise risk management, risk assessment, and improvement processes"
+    function: GOVERN
+    category: Cybersecurity Supply Chain Risk Management
+
+  - id: GV.SC-04
+    name: "Suppliers known and prioritized"
+    description: "Suppliers are known and prioritized by criticality"
+    function: GOVERN
+    category: Cybersecurity Supply Chain Risk Management
+
+  - id: GV.SC-05
+    name: "Supplier requirements established"
+    description: "Requirements to address cybersecurity risks in supply chains are established, prioritized, and integrated into contracts and other agreements with suppliers and other relevant third parties"
+    function: GOVERN
+    category: Cybersecurity Supply Chain Risk Management
+
+  - id: GV.SC-06
+    name: "Pre-relationship due diligence"
+    description: "Planning and due diligence are performed to reduce risks before entering into formal supplier or other third-party relationships"
+    function: GOVERN
+    category: Cybersecurity Supply Chain Risk Management
+
+  - id: GV.SC-07
+    name: "Supplier risks monitored"
+    description: "The risks posed by a supplier, their products and services, and other third parties are understood, recorded, prioritized, assessed, responded to, and monitored over the course of the relationship"
+    function: GOVERN
+    category: Cybersecurity Supply Chain Risk Management
+
+  - id: GV.SC-08
+    name: "Supplier incident response"
+    description: "Relevant suppliers and other third parties are included in incident planning, response, and recovery activities"
+    function: GOVERN
+    category: Cybersecurity Supply Chain Risk Management
+
+  - id: GV.SC-09
+    name: "Supply chain practices in lifecycle"
+    description: "Supply chain security practices are integrated into cybersecurity and enterprise risk management programs, and their performance is monitored throughout the technology product and service life cycle"
+    function: GOVERN
+    category: Cybersecurity Supply Chain Risk Management
+
+  - id: GV.SC-10
+    name: "Supply chain risk management plans"
+    description: "Cybersecurity supply chain risk management plans include provisions for activities that occur after the conclusion of a partnership or service agreement"
+    function: GOVERN
+    category: Cybersecurity Supply Chain Risk Management
+
+  # ==================================================
+  # IDENTIFY (ID) — 21 subcategories across 3 categories
+  # ==================================================
+
+  # ID.AM — Asset Management
   - id: ID.AM-01
-    name: "Asset inventory - hardware"
+    name: "Hardware inventory"
     description: "Inventories of hardware managed by the organization are maintained"
     function: IDENTIFY
     category: Asset Management
 
+  - id: ID.AM-02
+    name: "Software inventory"
+    description: "Inventories of software, services, and systems managed by the organization are maintained"
+    function: IDENTIFY
+    category: Asset Management
+
+  - id: ID.AM-03
+    name: "Network communications mapped"
+    description: "Representations of the organization's authorized network communication and internal and external network data flows are maintained"
+    function: IDENTIFY
+    category: Asset Management
+
+  - id: ID.AM-04
+    name: "Third-party services inventoried"
+    description: "Inventories of services provided by suppliers are maintained"
+    function: IDENTIFY
+    category: Asset Management
+
+  - id: ID.AM-05
+    name: "Assets prioritized by criticality"
+    description: "Assets are prioritized based on classification, criticality, resources, and impact on the mission"
+    function: IDENTIFY
+    category: Asset Management
+
+  - id: ID.AM-07
+    name: "Data inventories"
+    description: "Inventories of data and corresponding metadata for designated data types are maintained"
+    function: IDENTIFY
+    category: Asset Management
+
+  - id: ID.AM-08
+    name: "Asset lifecycle management"
+    description: "Systems, hardware, software, services, and data are managed throughout their life cycles"
+    function: IDENTIFY
+    category: Asset Management
+
+  # ID.RA — Risk Assessment
   - id: ID.RA-01
-    name: "Vulnerability identification"
+    name: "Vulnerabilities identified"
     description: "Vulnerabilities in assets are identified, validated, and recorded"
     function: IDENTIFY
     category: Risk Assessment
+
+  - id: ID.RA-02
+    name: "Threat intelligence received"
+    description: "Cyber threat intelligence is received from information sharing forums and sources"
+    function: IDENTIFY
+    category: Risk Assessment
+
+  - id: ID.RA-03
+    name: "Threats identified and recorded"
+    description: "Internal and external threats to the organization are identified and recorded"
+    function: IDENTIFY
+    category: Risk Assessment
+
+  - id: ID.RA-04
+    name: "Potential impacts identified"
+    description: "Potential impacts and likelihoods of threats exploiting vulnerabilities are identified and recorded"
+    function: IDENTIFY
+    category: Risk Assessment
+
+  - id: ID.RA-05
+    name: "Risk prioritized for response"
+    description: "Threats, vulnerabilities, likelihoods, and impacts are used to understand inherent risk and inform risk response prioritization"
+    function: IDENTIFY
+    category: Risk Assessment
+
+  - id: ID.RA-06
+    name: "Risk responses chosen"
+    description: "Risk responses are chosen, prioritized, planned, tracked, and communicated"
+    function: IDENTIFY
+    category: Risk Assessment
+
+  - id: ID.RA-07
+    name: "Changes managed"
+    description: "Changes and exceptions are managed, assessed for risk impact, recorded, and tracked"
+    function: IDENTIFY
+    category: Risk Assessment
+
+  - id: ID.RA-08
+    name: "Vulnerability disclosure processes"
+    description: "Processes for receiving, analyzing, and responding to vulnerability disclosures are established"
+    function: IDENTIFY
+    category: Risk Assessment
+
+  - id: ID.RA-09
+    name: "Third-party authenticity"
+    description: "The authenticity and integrity of hardware and software are assessed prior to acquisition and use"
+    function: IDENTIFY
+    category: Risk Assessment
+
+  - id: ID.RA-10
+    name: "Pre-acquisition critical supplier assessments"
+    description: "Critical suppliers are assessed prior to acquisition"
+    function: IDENTIFY
+    category: Risk Assessment
+
+  # ID.IM — Improvement
+  - id: ID.IM-01
+    name: "Improvements from evaluations"
+    description: "Improvements are identified from evaluations"
+    function: IDENTIFY
+    category: Improvement
+
+  - id: ID.IM-02
+    name: "Improvements from security tests"
+    description: "Improvements are identified from security tests and exercises, including those done in coordination with suppliers and relevant third parties"
+    function: IDENTIFY
+    category: Improvement
+
+  - id: ID.IM-03
+    name: "Improvements from operations"
+    description: "Improvements are identified from execution of operational processes, procedures, and activities"
+    function: IDENTIFY
+    category: Improvement
+
+  - id: ID.IM-04
+    name: "Incident response plans"
+    description: "Incident response plans and other cybersecurity plans that affect operations are established, communicated, maintained, and improved"
+    function: IDENTIFY
+    category: Improvement
+
+  # ==================================================
+  # PROTECT (PR) — 22 subcategories across 5 categories
+  # ==================================================
+
+  # PR.AA — Identity Management, Authentication, and Access Control
+  - id: PR.AA-01
+    name: "Identities managed"
+    description: "Identities and credentials for authorized users, services, and hardware are managed by the organization"
+    function: PROTECT
+    category: Identity Management, Authentication, and Access Control
+
+  - id: PR.AA-02
+    name: "Identities proofed and bound"
+    description: "Identities are proofed and bound to credentials based on the context of interactions"
+    function: PROTECT
+    category: Identity Management, Authentication, and Access Control
+
+  - id: PR.AA-03
+    name: "Users, services, and hardware authenticated"
+    description: "Users, services, and hardware are authenticated"
+    function: PROTECT
+    category: Identity Management, Authentication, and Access Control
+
+  - id: PR.AA-04
+    name: "Identity assertions protected"
+    description: "Identity assertions are protected, conveyed, and verified"
+    function: PROTECT
+    category: Identity Management, Authentication, and Access Control
+
+  - id: PR.AA-05
+    name: "Access permissions managed"
+    description: "Access permissions, entitlements, and authorizations are defined in a policy, managed, enforced, and reviewed, and incorporate the principles of least privilege and separation of duties"
+    function: PROTECT
+    category: Identity Management, Authentication, and Access Control
+
+  - id: PR.AA-06
+    name: "Physical access managed"
+    description: "Physical access to assets is managed, monitored, and enforced commensurate with risk"
+    function: PROTECT
+    category: Identity Management, Authentication, and Access Control
+
+  # PR.AT — Awareness and Training
+  - id: PR.AT-01
+    name: "General awareness training"
+    description: "Personnel are provided with awareness and training so that they possess the knowledge and skills to perform general tasks with cybersecurity risks in mind"
+    function: PROTECT
+    category: Awareness and Training
+
+  - id: PR.AT-02
+    name: "Specialized roles training"
+    description: "Individuals in specialized roles are provided with awareness and training so that they possess the knowledge and skills to perform relevant tasks with cybersecurity risks in mind"
+    function: PROTECT
+    category: Awareness and Training
+
+  # PR.DS — Data Security
+  - id: PR.DS-01
+    name: "Data-at-rest protected"
+    description: "The confidentiality, integrity, and availability of data-at-rest are protected"
+    function: PROTECT
+    category: Data Security
+
+  - id: PR.DS-02
+    name: "Data-in-transit protected"
+    description: "The confidentiality, integrity, and availability of data-in-transit are protected"
+    function: PROTECT
+    category: Data Security
+
+  - id: PR.DS-10
+    name: "Data-in-use protected"
+    description: "The confidentiality, integrity, and availability of data-in-use are protected"
+    function: PROTECT
+    category: Data Security
+
+  - id: PR.DS-11
+    name: "Backups maintained"
+    description: "Backups of data are created, protected, maintained, and tested"
+    function: PROTECT
+    category: Data Security
+
+  # PR.PS — Platform Security
+  - id: PR.PS-01
+    name: "Configuration management practices"
+    description: "Configuration management practices are established and applied"
+    function: PROTECT
+    category: Platform Security
+
+  - id: PR.PS-02
+    name: "Software maintained, replaced, removed"
+    description: "Software is maintained, replaced, and removed commensurate with risk"
+    function: PROTECT
+    category: Platform Security
+
+  - id: PR.PS-03
+    name: "Hardware maintained, replaced, removed"
+    description: "Hardware is maintained, replaced, and removed commensurate with risk"
+    function: PROTECT
+    category: Platform Security
+
+  - id: PR.PS-04
+    name: "Log records generated"
+    description: "Log records are generated and made available for continuous monitoring"
+    function: PROTECT
+    category: Platform Security
+
+  - id: PR.PS-05
+    name: "Unauthorized software prevented"
+    description: "Installation and execution of unauthorized software are prevented"
+    function: PROTECT
+    category: Platform Security
+
+  - id: PR.PS-06
+    name: "Secure software development practices"
+    description: "Secure software development practices are integrated and their performance is monitored throughout the software development life cycle"
+    function: PROTECT
+    category: Platform Security
+
+  # PR.IR — Technology Infrastructure Resilience
+  - id: PR.IR-01
+    name: "Networks protected from unauthorized access"
+    description: "Networks and environments are protected from unauthorized logical access and usage"
+    function: PROTECT
+    category: Technology Infrastructure Resilience
+
+  - id: PR.IR-02
+    name: "Technology protected from environmental threats"
+    description: "The organization's technology assets are protected from environmental threats"
+    function: PROTECT
+    category: Technology Infrastructure Resilience
+
+  - id: PR.IR-03
+    name: "Resilience requirements implemented"
+    description: "Mechanisms are implemented to achieve resilience requirements in normal and adverse situations"
+    function: PROTECT
+    category: Technology Infrastructure Resilience
+
+  - id: PR.IR-04
+    name: "Adequate resource capacity"
+    description: "Adequate resource capacity to ensure availability is maintained"
+    function: PROTECT
+    category: Technology Infrastructure Resilience
+
+  # ==================================================
+  # DETECT (DE) — 11 subcategories across 2 categories
+  # ==================================================
+
+  # DE.CM — Continuous Monitoring
+  - id: DE.CM-01
+    name: "Networks monitored"
+    description: "Networks and network services are monitored to find potentially adverse events"
+    function: DETECT
+    category: Continuous Monitoring
+
+  - id: DE.CM-02
+    name: "Physical environment monitored"
+    description: "The physical environment is monitored to find potentially adverse events"
+    function: DETECT
+    category: Continuous Monitoring
+
+  - id: DE.CM-03
+    name: "Personnel activity monitored"
+    description: "Personnel activity and technology usage are monitored to find potentially adverse events"
+    function: DETECT
+    category: Continuous Monitoring
+
+  - id: DE.CM-06
+    name: "External service provider activities monitored"
+    description: "External service provider activities and services are monitored to find potentially adverse events"
+    function: DETECT
+    category: Continuous Monitoring
+
+  - id: DE.CM-09
+    name: "Computing hardware and software monitored"
+    description: "Computing hardware and software, runtime environments, and their data are monitored to find potentially adverse events"
+    function: DETECT
+    category: Continuous Monitoring
+
+  # DE.AE — Adverse Event Analysis
+  - id: DE.AE-02
+    name: "Adverse events analyzed"
+    description: "Potentially adverse events are analyzed to better understand associated activities"
+    function: DETECT
+    category: Adverse Event Analysis
+
+  - id: DE.AE-03
+    name: "Event information correlated"
+    description: "Information is correlated from multiple sources"
+    function: DETECT
+    category: Adverse Event Analysis
+
+  - id: DE.AE-04
+    name: "Estimated impact of events"
+    description: "The estimated impact and scope of adverse events are understood"
+    function: DETECT
+    category: Adverse Event Analysis
+
+  - id: DE.AE-06
+    name: "Event information provided"
+    description: "Information on adverse events is provided to authorized staff and tools"
+    function: DETECT
+    category: Adverse Event Analysis
+
+  - id: DE.AE-07
+    name: "Cyber threat intelligence incorporated"
+    description: "Cyber threat intelligence and other contextual information are integrated into the analysis"
+    function: DETECT
+    category: Adverse Event Analysis
+
+  - id: DE.AE-08
+    name: "Incidents declared"
+    description: "Incidents are declared when adverse events meet the defined incident criteria"
+    function: DETECT
+    category: Adverse Event Analysis
+
+  # ==================================================
+  # RESPOND (RS) — 13 subcategories across 4 categories
+  # ==================================================
+
+  # RS.MA — Incident Management
+  - id: RS.MA-01
+    name: "Incident response plan executed"
+    description: "The incident response plan is executed in coordination with relevant third parties once an incident is declared"
+    function: RESPOND
+    category: Incident Management
+
+  - id: RS.MA-02
+    name: "Incident reports triaged"
+    description: "Incident reports are triaged and validated"
+    function: RESPOND
+    category: Incident Management
+
+  - id: RS.MA-03
+    name: "Incidents categorized and prioritized"
+    description: "Incidents are categorized and prioritized"
+    function: RESPOND
+    category: Incident Management
+
+  - id: RS.MA-04
+    name: "Incidents escalated or elevated"
+    description: "Incidents are escalated or elevated as needed"
+    function: RESPOND
+    category: Incident Management
+
+  - id: RS.MA-05
+    name: "Recovery criteria applied"
+    description: "The criteria for initiating incident recovery are applied"
+    function: RESPOND
+    category: Incident Management
+
+  # RS.AN — Incident Analysis
+  - id: RS.AN-03
+    name: "Analysis performed"
+    description: "Analysis is performed to establish what has taken place during an incident and the root cause of the incident"
+    function: RESPOND
+    category: Incident Analysis
+
+  - id: RS.AN-06
+    name: "Investigation actions recorded"
+    description: "Actions performed during an investigation are recorded, and the records' integrity and provenance are preserved"
+    function: RESPOND
+    category: Incident Analysis
+
+  - id: RS.AN-07
+    name: "Incident data and metadata collected"
+    description: "Incident data and metadata are collected, and their integrity and provenance are preserved"
+    function: RESPOND
+    category: Incident Analysis
+
+  - id: RS.AN-08
+    name: "Magnitude estimated"
+    description: "An incident's magnitude is estimated and validated"
+    function: RESPOND
+    category: Incident Analysis
+
+  # RS.CO — Incident Response Reporting and Communication
+  - id: RS.CO-02
+    name: "Internal and external stakeholders notified"
+    description: "Internal and external stakeholders are notified of incidents"
+    function: RESPOND
+    category: Incident Response Reporting and Communication
+
+  - id: RS.CO-03
+    name: "Information shared with stakeholders"
+    description: "Information is shared with designated internal and external stakeholders"
+    function: RESPOND
+    category: Incident Response Reporting and Communication
+
+  # RS.MI — Incident Mitigation
+  - id: RS.MI-01
+    name: "Incidents contained"
+    description: "Incidents are contained"
+    function: RESPOND
+    category: Incident Mitigation
+
+  - id: RS.MI-02
+    name: "Incidents eradicated"
+    description: "Incidents are eradicated"
+    function: RESPOND
+    category: Incident Mitigation
+
+  # ==================================================
+  # RECOVER (RC) — 8 subcategories across 2 categories
+  # ==================================================
+
+  # RC.RP — Incident Recovery Plan Execution
+  - id: RC.RP-01
+    name: "Recovery plan executed"
+    description: "The recovery portion of the incident response plan is executed once initiated from the incident response process"
+    function: RECOVER
+    category: Incident Recovery Plan Execution
+
+  - id: RC.RP-02
+    name: "Recovery actions selected, scoped, prioritized"
+    description: "Recovery actions are selected, scoped, prioritized, and performed"
+    function: RECOVER
+    category: Incident Recovery Plan Execution
+
+  - id: RC.RP-03
+    name: "Backup integrity verified"
+    description: "The integrity of backups and other restoration assets is verified before using them for restoration"
+    function: RECOVER
+    category: Incident Recovery Plan Execution
+
+  - id: RC.RP-04
+    name: "Critical mission functions restored"
+    description: "Critical mission functions and cybersecurity risk management are considered to establish post-incident operational norms"
+    function: RECOVER
+    category: Incident Recovery Plan Execution
+
+  - id: RC.RP-05
+    name: "Recovery integrity verified"
+    description: "The integrity of restored assets is verified, systems and services are restored, and normal operating status is confirmed"
+    function: RECOVER
+    category: Incident Recovery Plan Execution
+
+  - id: RC.RP-06
+    name: "Recovery end declared"
+    description: "The end of incident recovery is declared based on criteria, and incident-related documentation is completed"
+    function: RECOVER
+    category: Incident Recovery Plan Execution
+
+  # RC.CO — Incident Recovery Communication
+  - id: RC.CO-03
+    name: "Recovery activities communicated"
+    description: "Recovery activities and progress in restoring operational capabilities are communicated to designated internal and external stakeholders"
+    function: RECOVER
+    category: Incident Recovery Communication
+
+  - id: RC.CO-04
+    name: "Public updates approved"
+    description: "Public updates on incident recovery are shared using approved methods and messaging"
+    function: RECOVER
+    category: Incident Recovery Communication
