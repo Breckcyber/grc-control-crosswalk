@@ -1,7 +1,7 @@
 
 > # GRC Control Crosswalk Tool
 
-> Open-source CLI and web tool mapping security and AI governance controls across five major frameworks: NIST CSF 2.0, ISO/IEC 27001:2022, ISO/IEC 42001:2023, NIST AI RMF 1.0, and the EU AI Act. Designed to reduce manual cross-framework mapping from hours to seconds.
+> Open-source CLI and web tool mapping 340+ security and AI governance controls across five major frameworks: NIST CSF 2.0, ISO/IEC 27001:2022, ISO/IEC 42001:2023, NIST AI RMF 1.0, and the EU AI Act. Designed to reduce manual cross-framework mapping from hours to seconds.
 
 [![Built with Claude Code](https://img.shields.io/badge/Built%20with-Claude%20Code-orange)](https://anthropic.com/claude-code)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
@@ -18,13 +18,19 @@ Takes a control from any of five frameworks and instantly returns the equivalent
 
 ## Frameworks Covered
 
+## Frameworks Covered
+
+## Frameworks Covered
+
 | Framework | Version | Status | Items |
 |-----------|---------|--------|-------|
 | NIST CSF | 2.0 | Complete | 106 subcategories |
 | ISO/IEC 27001 | 2022 | Complete | 93 Annex A controls |
-| NIST AI RMF | 1.0 | In progress | — |
-| ISO/IEC 42001 | 2023 | In progress | — |
-| EU AI Act | 2024 | In progress | — |
+| NIST AI RMF | 1.0 | Complete | ~72 subcategories |
+| ISO/IEC 42001 | 2023 | Complete | Clauses + 38 Annex A controls |
+| EU AI Act | 2024 | Complete | ~30 key governance articles |
+
+**Total: 340+ controls and articles across 5 frameworks.**
 
 ## Who This Is For
 
@@ -35,18 +41,20 @@ Takes a control from any of five frameworks and instantly returns the equivalent
 
 ## Roadmap
 
+## Roadmap
+
 - [x] NIST CSF 2.0
 - [x] ISO/IEC 27001:2022
-- [ ] NIST AI RMF 1.0
-- [ ] ISO/IEC 42001:2023
-- [ ] EU AI Act key articles
+- [x] NIST AI RMF 1.0
+- [x] ISO/IEC 42001:2023
+- [x] EU AI Act key articles
 - [ ] Cross-framework mappings file
 - [ ] CLI lookup tool
 - [ ] Public web interface
 
 ## About
 
-Built by Breck Agyekum, GRC and AI Governance Analyst based in Lethbridge, AB. This project demonstrates the intersection of GRC framework expertise and modern AI-augmented tooling.
+Built by Breck Agyekum, GRC and AI Governance Analyst based in Canada. This project demonstrates the intersection of GRC framework expertise and modern AI-augmented tooling.
 
 ## License
 
