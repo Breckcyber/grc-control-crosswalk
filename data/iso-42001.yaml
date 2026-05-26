@@ -1,0 +1,401 @@
+framework: "ISO/IEC 42001:2023"
+version: "2023"
+last_updated: "2026-05-12"
+source: "https://www.iso.org/standard/81230.html"
+description: "Artificial intelligence — Management system requirements"
+controls:
+  # ============================================================
+  # PART 1 — MAIN CLAUSES (4 through 10)
+  # ============================================================
+
+  # Clause 4 — Context of the organization
+  - id: "Clause 4.1"
+    name: "Understanding the organization and its context"
+    description: "The organization shall determine external and internal issues that are relevant to its purpose and that affect its ability to achieve the intended outcome(s) of its AI management system. The organization shall determine whether climate change is a relevant issue. Confirm against official ISO/IEC 42001:2023 documentation."
+    type: "Clause"
+    category: "Context of the organization"
+
+  - id: "Clause 4.2"
+    name: "Understanding the needs and expectations of interested parties"
+    description: "The organization shall determine the interested parties that are relevant to the AI management system, the relevant requirements of these interested parties, and which of these requirements will be addressed through the AI management system. Confirm against official ISO/IEC 42001:2023 documentation."
+    type: "Clause"
+    category: "Context of the organization"
+
+  - id: "Clause 4.3"
+    name: "Determining the scope of the AI management system"
+    description: "The organization shall determine the boundaries and applicability of the AI management system to establish its scope, considering external and internal issues, requirements of interested parties, and the organization's activities and AI systems. The scope shall be available as documented information. Confirm against official ISO/IEC 42001:2023 documentation."
+    type: "Clause"
+    category: "Context of the organization"
+
+  - id: "Clause 4.4"
+    name: "AI management system"
+    description: "The organization shall establish, implement, maintain and continually improve an AI management system, including the processes needed and their interactions, in accordance with the requirements of this document. Confirm against official ISO/IEC 42001:2023 documentation."
+    type: "Clause"
+    category: "Context of the organization"
+
+  # Clause 5 — Leadership
+  - id: "Clause 5.1"
+    name: "Leadership and commitment"
+    description: "Top management shall demonstrate leadership and commitment with respect to the AI management system by ensuring the AI policy and AI objectives are established and compatible with the strategic direction of the organization, integrating AI management system requirements into the organization's business processes, providing resources, communicating the importance of effective AI management, and supporting other relevant management roles. Confirm against official ISO/IEC 42001:2023 documentation."
+    type: "Clause"
+    category: "Leadership"
+
+  - id: "Clause 5.2"
+    name: "AI policy"
+    description: "Top management shall establish an AI policy that is appropriate to the purpose of the organization, provides a framework for setting AI objectives, includes a commitment to satisfy applicable requirements, and includes a commitment to continual improvement of the AI management system. The policy shall be available as documented information, communicated within the organization, and available to interested parties as appropriate. Confirm against official ISO/IEC 42001:2023 documentation."
+    type: "Clause"
+    category: "Leadership"
+
+  - id: "Clause 5.3"
+    name: "Roles, responsibilities and authorities"
+    description: "Top management shall ensure that the responsibilities and authorities for roles relevant to the AI management system are assigned and communicated within the organization. Confirm against official ISO/IEC 42001:2023 documentation."
+    type: "Clause"
+    category: "Leadership"
+
+  # Clause 6 — Planning
+  - id: "Clause 6.1"
+    name: "Actions to address risks and opportunities"
+    description: "When planning for the AI management system, the organization shall consider the issues referred to in 4.1 and the requirements referred to in 4.2, and determine the risks and opportunities that need to be addressed. This includes AI risk assessment (6.1.2), AI risk treatment (6.1.3), and AI system impact assessment (6.1.4). Confirm against official ISO/IEC 42001:2023 documentation."
+    type: "Clause"
+    category: "Planning"
+
+  - id: "Clause 6.2"
+    name: "AI objectives and planning to achieve them"
+    description: "The organization shall establish AI objectives at relevant functions and levels. The AI objectives shall be consistent with the AI policy, measurable (if practicable), take into account applicable requirements, be monitored, communicated, and updated as appropriate. The organization shall determine what will be done, what resources will be required, who will be responsible, when it will be completed, and how results will be evaluated. Confirm against official ISO/IEC 42001:2023 documentation."
+    type: "Clause"
+    category: "Planning"
+
+  - id: "Clause 6.3"
+    name: "Planning of changes"
+    description: "When the organization determines the need for changes to the AI management system, the changes shall be carried out in a planned manner. Confirm against official ISO/IEC 42001:2023 documentation."
+    type: "Clause"
+    category: "Planning"
+
+  # Clause 7 — Support
+  - id: "Clause 7.1"
+    name: "Resources"
+    description: "The organization shall determine and provide the resources needed for the establishment, implementation, maintenance and continual improvement of the AI management system. Confirm against official ISO/IEC 42001:2023 documentation."
+    type: "Clause"
+    category: "Support"
+
+  - id: "Clause 7.2"
+    name: "Competence"
+    description: "The organization shall determine the necessary competence of person(s) doing work under its control that affects the AI performance, ensure that these persons are competent on the basis of appropriate education, training, or experience, and where applicable, take actions to acquire the necessary competence. Documented information shall be retained as evidence of competence. Confirm against official ISO/IEC 42001:2023 documentation."
+    type: "Clause"
+    category: "Support"
+
+  - id: "Clause 7.3"
+    name: "Awareness"
+    description: "Persons doing work under the organization's control shall be aware of the AI policy, their contribution to the effectiveness of the AI management system (including benefits of improved AI performance), and the implications of not conforming with the AI management system requirements. Confirm against official ISO/IEC 42001:2023 documentation."
+    type: "Clause"
+    category: "Support"
+
+  - id: "Clause 7.4"
+    name: "Communication"
+    description: "The organization shall determine the internal and external communications relevant to the AI management system, including on what it will communicate, when to communicate, with whom to communicate, how to communicate, and who communicates. Confirm against official ISO/IEC 42001:2023 documentation."
+    type: "Clause"
+    category: "Support"
+
+  - id: "Clause 7.5"
+    name: "Documented information"
+    description: "The AI management system shall include documented information required by this document and determined by the organization as being necessary for effectiveness. This includes requirements for creating, updating, and controlling documented information. Confirm against official ISO/IEC 42001:2023 documentation."
+    type: "Clause"
+    category: "Support"
+
+  # Clause 8 — Operation
+  - id: "Clause 8.1"
+    name: "Operational planning and control"
+    description: "The organization shall plan, implement, and control the processes needed to meet requirements and to implement the actions determined in Clause 6, by establishing criteria for the processes and implementing control of the processes in accordance with the criteria. Documented information shall be available to support confidence that the processes have been carried out as planned. Confirm against official ISO/IEC 42001:2023 documentation."
+    type: "Clause"
+    category: "Operation"
+
+  - id: "Clause 8.2"
+    name: "AI risk assessment"
+    description: "The organization shall perform AI risk assessments at planned intervals or when significant changes are proposed or occur, in accordance with the criteria established in 6.1.2. The organization shall retain documented information of the results of the AI risk assessments. Confirm against official ISO/IEC 42001:2023 documentation."
+    type: "Clause"
+    category: "Operation"
+
+  - id: "Clause 8.3"
+    name: "AI risk treatment"
+    description: "The organization shall implement the AI risk treatment plan and retain documented information of the results of the AI risk treatment. Confirm against official ISO/IEC 42001:2023 documentation."
+    type: "Clause"
+    category: "Operation"
+
+  - id: "Clause 8.4"
+    name: "AI system impact assessment"
+    description: "The organization shall perform AI system impact assessments at planned intervals or when significant changes are proposed or occur, in accordance with the criteria established in 6.1.4. The organization shall retain documented information of the results. Confirm against official ISO/IEC 42001:2023 documentation."
+    type: "Clause"
+    category: "Operation"
+
+  # Clause 9 — Performance evaluation
+  - id: "Clause 9.1"
+    name: "Monitoring, measurement, analysis and evaluation"
+    description: "The organization shall determine what needs to be monitored and measured, the methods for monitoring, measurement, analysis and evaluation needed to ensure valid results, when the monitoring and measuring shall be performed, and when the results shall be analysed and evaluated. Documented information shall be retained as evidence of the results. Confirm against official ISO/IEC 42001:2023 documentation."
+    type: "Clause"
+    category: "Performance evaluation"
+
+  - id: "Clause 9.2"
+    name: "Internal audit"
+    description: "The organization shall conduct internal audits at planned intervals to provide information on whether the AI management system conforms to the organization's own requirements and the requirements of this document, and is effectively implemented and maintained. The organization shall plan, establish, implement and maintain an audit programme(s). Confirm against official ISO/IEC 42001:2023 documentation."
+    type: "Clause"
+    category: "Performance evaluation"
+
+  - id: "Clause 9.3"
+    name: "Management review"
+    description: "Top management shall review the organization's AI management system at planned intervals to ensure its continuing suitability, adequacy and effectiveness. The management review shall consider status of actions from previous reviews, changes in external and internal issues, information on AI performance, and opportunities for continual improvement. Documented information shall be retained as evidence of the results. Confirm against official ISO/IEC 42001:2023 documentation."
+    type: "Clause"
+    category: "Performance evaluation"
+
+  # Clause 10 — Improvement
+  - id: "Clause 10.1"
+    name: "Continual improvement"
+    description: "The organization shall continually improve the suitability, adequacy and effectiveness of the AI management system. Confirm against official ISO/IEC 42001:2023 documentation."
+    type: "Clause"
+    category: "Improvement"
+
+  - id: "Clause 10.2"
+    name: "Nonconformity and corrective action"
+    description: "When a nonconformity occurs, the organization shall react to the nonconformity, evaluate the need for action to eliminate the causes, implement any action needed, review the effectiveness of any corrective action taken, and make changes to the AI management system, if necessary. Documented information shall be retained as evidence. Confirm against official ISO/IEC 42001:2023 documentation."
+    type: "Clause"
+    category: "Improvement"
+
+  # ============================================================
+  # PART 2 — ANNEX A CONTROLS
+  # ============================================================
+
+  # A.2 — Policies related to AI
+  - id: "A.2.2"
+    name: "AI policy"
+    description: "The organization shall document a policy for the development or use of AI systems. Confirm against official ISO/IEC 42001:2023 documentation."
+    type: "Annex A control"
+    category: "AI policies"
+
+  - id: "A.2.3"
+    name: "Alignment with other organizational policies"
+    description: "The organization shall determine where other policies can be affected by or apply to the objectives with respect to AI systems. Confirm against official ISO/IEC 42001:2023 documentation."
+    type: "Annex A control"
+    category: "AI policies"
+
+  - id: "A.2.4"
+    name: "Review of the AI policy"
+    description: "The AI policy shall be reviewed at planned intervals or as additional needs arise to ensure its continuing suitability, adequacy and effectiveness. Confirm against official ISO/IEC 42001:2023 documentation."
+    type: "Annex A control"
+    category: "AI policies"
+
+  # A.3 — Internal organization
+  - id: "A.3.2"
+    name: "AI roles and responsibilities"
+    description: "Roles and responsibilities for AI shall be defined and allocated according to the needs of the organization. Confirm against official ISO/IEC 42001:2023 documentation."
+    type: "Annex A control"
+    category: "Internal organization"
+
+  - id: "A.3.3"
+    name: "Reporting of concerns"
+    description: "The organization shall define and put in place a process to report concerns about the organization's role with respect to an AI system throughout its life cycle. Confirm against official ISO/IEC 42001:2023 documentation."
+    type: "Annex A control"
+    category: "Internal organization"
+
+  # A.4 — Resources for AI systems
+  - id: "A.4.2"
+    name: "Resource documentation"
+    description: "The organization shall identify and document relevant resources required for the activities at given AI system life cycle stages and other AI-related activities, including AI system components and assets. Confirm against official ISO/IEC 42001:2023 documentation."
+    type: "Annex A control"
+    category: "Resources for AI systems"
+
+  - id: "A.4.3"
+    name: "Data resources"
+    description: "As part of the resource identification, the organization shall document information about the data resources utilized for the AI system. Confirm against official ISO/IEC 42001:2023 documentation."
+    type: "Annex A control"
+    category: "Resources for AI systems"
+
+  - id: "A.4.4"
+    name: "Tooling resources"
+    description: "As part of the resource identification, the organization shall document information about the tooling resources utilized for the AI system. Confirm against official ISO/IEC 42001:2023 documentation."
+    type: "Annex A control"
+    category: "Resources for AI systems"
+
+  - id: "A.4.5"
+    name: "System and computing resources"
+    description: "As part of the resource identification, the organization shall document information about the system and computing resources utilized for the AI system. Confirm against official ISO/IEC 42001:2023 documentation."
+    type: "Annex A control"
+    category: "Resources for AI systems"
+
+  - id: "A.4.6"
+    name: "Human resources"
+    description: "As part of the resource identification, the organization shall document information about the human resources and their competences utilized for the development, deployment, operation, change management, maintenance, transfer and decommissioning, as well as verification and integration of the AI system. Confirm against official ISO/IEC 42001:2023 documentation."
+    type: "Annex A control"
+    category: "Resources for AI systems"
+
+  # A.5 — Assessing impacts of AI systems
+  - id: "A.5.2"
+    name: "AI system impact assessment process"
+    description: "The organization shall establish a process to assess the potential consequences for individuals, groups of individuals, and societies that can result from the development, provision or use of AI systems. Confirm against official ISO/IEC 42001:2023 documentation."
+    type: "Annex A control"
+    category: "Assessing impacts of AI systems"
+
+  - id: "A.5.3"
+    name: "Documentation of AI system impact assessments"
+    description: "The organization shall document the results of AI system impact assessments and retain them for a defined period. Confirm against official ISO/IEC 42001:2023 documentation."
+    type: "Annex A control"
+    category: "Assessing impacts of AI systems"
+
+  - id: "A.5.4"
+    name: "Assessing AI system impact on individuals or groups of individuals"
+    description: "The organization shall assess and document the potential impacts of AI systems to individuals or groups of individuals throughout the system's life cycle. Confirm against official ISO/IEC 42001:2023 documentation."
+    type: "Annex A control"
+    category: "Assessing impacts of AI systems"
+
+  - id: "A.5.5"
+    name: "Assessing societal impacts of AI systems"
+    description: "The organization shall assess and document the potential societal impacts of AI systems throughout their life cycle. Confirm against official ISO/IEC 42001:2023 documentation."
+    type: "Annex A control"
+    category: "Assessing impacts of AI systems"
+
+  # A.6 — AI system life cycle
+  - id: "A.6.1.2"
+    name: "Objectives for responsible development of AI system"
+    description: "The organization shall identify and document objectives to guide the responsible development of AI systems, and integrate measures to achieve those objectives in the development life cycle. Confirm against official ISO/IEC 42001:2023 documentation."
+    type: "Annex A control"
+    category: "AI system lifecycle"
+
+  - id: "A.6.1.3"
+    name: "Processes for responsible AI system design and development"
+    description: "The organization shall define and document the specific processes for the responsible design and development of the AI system. Confirm against official ISO/IEC 42001:2023 documentation."
+    type: "Annex A control"
+    category: "AI system lifecycle"
+
+  - id: "A.6.2.2"
+    name: "AI system requirements and specification"
+    description: "The organization shall specify and document requirements for new AI systems or material enhancements to existing systems. Confirm against official ISO/IEC 42001:2023 documentation."
+    type: "Annex A control"
+    category: "AI system lifecycle"
+
+  - id: "A.6.2.3"
+    name: "Documentation of AI system design and development"
+    description: "The organization shall document the AI system design and development based on organizational objectives, documented requirements, and specifications. Confirm against official ISO/IEC 42001:2023 documentation."
+    type: "Annex A control"
+    category: "AI system lifecycle"
+
+  - id: "A.6.2.4"
+    name: "AI system verification and validation"
+    description: "The organization shall define and document verification and validation measures for the AI system, and specify criteria to be used. Confirm against official ISO/IEC 42001:2023 documentation."
+    type: "Annex A control"
+    category: "AI system lifecycle"
+
+  - id: "A.6.2.5"
+    name: "AI system deployment"
+    description: "The organization shall document a deployment plan and ensure that appropriate requirements are met prior to deployment. Confirm against official ISO/IEC 42001:2023 documentation."
+    type: "Annex A control"
+    category: "AI system lifecycle"
+
+  - id: "A.6.2.6"
+    name: "AI system operation and monitoring"
+    description: "The organization shall define and document the necessary elements for the ongoing operation of the AI system, including system monitoring, repairs, updates and support. Confirm against official ISO/IEC 42001:2023 documentation."
+    type: "Annex A control"
+    category: "AI system lifecycle"
+
+  - id: "A.6.2.7"
+    name: "AI system technical documentation"
+    description: "The organization shall determine what AI system technical documentation is needed for each relevant category of interested parties, such as users, partners, supervisory authorities, and provide the technical documentation to them in the appropriate form. Confirm against official ISO/IEC 42001:2023 documentation."
+    type: "Annex A control"
+    category: "AI system lifecycle"
+
+  - id: "A.6.2.8"
+    name: "AI system recording of event logs"
+    description: "The AI system shall be designed and developed with capabilities for automatically recording events while the AI system is operating. Confirm against official ISO/IEC 42001:2023 documentation."
+    type: "Annex A control"
+    category: "AI system lifecycle"
+
+  # A.7 — Data for AI systems
+  - id: "A.7.2"
+    name: "Data for development and enhancement of AI system"
+    description: "The organization shall define, document and implement data management processes related to the development of AI systems. Confirm against official ISO/IEC 42001:2023 documentation."
+    type: "Annex A control"
+    category: "Data for AI systems"
+
+  - id: "A.7.3"
+    name: "Acquisition of data"
+    description: "The organization shall determine and document details about the acquisition and selection of the data used in AI systems. Confirm against official ISO/IEC 42001:2023 documentation."
+    type: "Annex A control"
+    category: "Data for AI systems"
+
+  - id: "A.7.4"
+    name: "Quality of data for AI systems"
+    description: "The organization shall define and document requirements for data quality and ensure that data used to develop and operate the AI system meets those requirements. Confirm against official ISO/IEC 42001:2023 documentation."
+    type: "Annex A control"
+    category: "Data for AI systems"
+
+  - id: "A.7.5"
+    name: "Data provenance"
+    description: "The organization shall define and document a process for documenting the provenance of data used in its AI systems over the lifetimes of the data and the AI system. Confirm against official ISO/IEC 42001:2023 documentation."
+    type: "Annex A control"
+    category: "Data for AI systems"
+
+  - id: "A.7.6"
+    name: "Data preparation"
+    description: "The organization shall define and document its criteria for selecting data preparations and the data preparation methods to be used. Confirm against official ISO/IEC 42001:2023 documentation."
+    type: "Annex A control"
+    category: "Data for AI systems"
+
+  # A.8 — Information for interested parties of AI systems
+  - id: "A.8.2"
+    name: "System documentation and information for users"
+    description: "The organization shall determine and provide the necessary information for users of the AI system. Confirm against official ISO/IEC 42001:2023 documentation."
+    type: "Annex A control"
+    category: "Information for interested parties"
+
+  - id: "A.8.3"
+    name: "External reporting"
+    description: "The organization shall provide capabilities for interested parties to report adverse impacts of the AI system. Confirm against official ISO/IEC 42001:2023 documentation."
+    type: "Annex A control"
+    category: "Information for interested parties"
+
+  - id: "A.8.4"
+    name: "Communication of incidents"
+    description: "The organization shall determine and document a plan for communicating incidents to users of the AI system. Confirm against official ISO/IEC 42001:2023 documentation."
+    type: "Annex A control"
+    category: "Information for interested parties"
+
+  - id: "A.8.5"
+    name: "Information for interested parties"
+    description: "The organization shall determine and document its obligations to report information about the AI system to interested parties. Confirm against official ISO/IEC 42001:2023 documentation."
+    type: "Annex A control"
+    category: "Information for interested parties"
+
+  # A.9 — Use of AI systems
+  - id: "A.9.2"
+    name: "Processes for responsible use of AI systems"
+    description: "The organization shall define and document the processes for the responsible use of AI systems. Confirm against official ISO/IEC 42001:2023 documentation."
+    type: "Annex A control"
+    category: "Use of AI systems"
+
+  - id: "A.9.3"
+    name: "Objectives for responsible use of AI system"
+    description: "The organization shall identify and document objectives to guide the responsible use of AI systems. Confirm against official ISO/IEC 42001:2023 documentation."
+    type: "Annex A control"
+    category: "Use of AI systems"
+
+  - id: "A.9.4"
+    name: "Intended use of the AI system"
+    description: "The organization shall ensure that the AI system is used according to the intended uses of the AI system and its accompanying documentation. Confirm against official ISO/IEC 42001:2023 documentation."
+    type: "Annex A control"
+    category: "Use of AI systems"
+
+  # A.10 — Third-party and customer relationships
+  - id: "A.10.2"
+    name: "Allocating responsibilities"
+    description: "The organization shall ensure that responsibilities within its AI system life cycle are allocated between the organization, its partners, suppliers, customers and third parties. Confirm against official ISO/IEC 42001:2023 documentation."
+    type: "Annex A control"
+    category: "Third-party and customer relationships"
+
+  - id: "A.10.3"
+    name: "Suppliers"
+    description: "The organization shall establish a process to ensure that its usage of services, products or materials provided by suppliers aligns with the organization's approach to the responsible development and use of AI systems. Confirm against official ISO/IEC 42001:2023 documentation."
+    type: "Annex A control"
+    category: "Third-party and customer relationships"
+
+  - id: "A.10.4"
+    name: "Customers"
+    description: "The organization shall ensure that its responsible approach to the development, provision or use of AI systems considers its customers' expectations and needs. Confirm against official ISO/IEC 42001:2023 documentation."
+    type: "Annex A control"
+    category: "Third-party and customer relationships"
