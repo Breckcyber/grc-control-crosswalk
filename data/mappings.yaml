@@ -1,0 +1,508 @@
+mappings_version: "1.0"
+last_updated: "2026-05-26"
+methodology: "Practitioner-judgment mappings between equivalent or related controls across NIST CSF 2.0, ISO/IEC 27001:2022, ISO/IEC 42001:2023, NIST AI RMF 1.0, and EU AI Act. Relationship indicator notes how direct the mapping is."
+mappings:
+
+  # =====================================================
+  # THEME 1: POLICY AND GOVERNANCE
+  # =====================================================
+  - source:
+      framework: "ISO 27001:2022"
+      id: "A.5.1"
+    targets:
+      - framework: "NIST CSF 2.0"
+        id: "GV.PO-01"
+        relationship: "Direct"
+        notes: "Both require formal information security policy established, approved by management, and communicated"
+      - framework: "ISO/IEC 42001:2023"
+        id: "A.2.2"
+        relationship: "Related"
+        notes: "ISO 42001 A.2.2 extends policy concept to AI management system policy"
+      - framework: "NIST AI RMF 1.0"
+        id: "GOVERN 1.1"
+        relationship: "Related"
+        notes: "Both address governance policy at organizational level; AI RMF focuses on AI-specific legal and regulatory requirements"
+
+  - source:
+      framework: "NIST CSF 2.0"
+      id: "GV.OC-01"
+    targets:
+      - framework: "ISO 27001:2022"
+        id: "A.5.1"
+        relationship: "Partial"
+        notes: "Organizational context understanding supports policy development; not a direct one-to-one"
+      - framework: "NIST AI RMF 1.0"
+        id: "GOVERN 1.2"
+        relationship: "Related"
+        notes: "Both establish organizational mission and risk tolerance context"
+      - framework: "ISO/IEC 42001:2023"
+        id: "Clause 4.1"
+        relationship: "Direct"
+        notes: "Both require understanding the organization and its context"
+
+  - source:
+      framework: "ISO/IEC 42001:2023"
+      id: "A.2.2"
+    targets:
+      - framework: "EU AI Act"
+        id: "Article 17"
+        relationship: "Related"
+        notes: "AI policy supports quality management system requirements for high-risk AI under EU AI Act Article 17. Confirm against original framework text"
+      - framework: "NIST AI RMF 1.0"
+        id: "GOVERN 1.1"
+        relationship: "Direct"
+        notes: "Both establish AI-specific policies aligned with legal and organizational requirements"
+
+  # =====================================================
+  # THEME 2: ROLES AND RESPONSIBILITIES
+  # =====================================================
+  - source:
+      framework: "ISO 27001:2022"
+      id: "A.5.2"
+    targets:
+      - framework: "NIST CSF 2.0"
+        id: "GV.RR-02"
+        relationship: "Direct"
+        notes: "Both define and allocate information security roles and responsibilities"
+      - framework: "ISO/IEC 42001:2023"
+        id: "A.3.2"
+        relationship: "Related"
+        notes: "ISO 42001 extends role allocation to AI-specific responsibilities"
+      - framework: "NIST AI RMF 1.0"
+        id: "GOVERN 2.1"
+        relationship: "Related"
+        notes: "Both assign accountability for risk management activities"
+
+  - source:
+      framework: "NIST CSF 2.0"
+      id: "GV.RR-01"
+    targets:
+      - framework: "ISO 27001:2022"
+        id: "A.5.4"
+        relationship: "Related"
+        notes: "Leadership accountability aligns with management responsibilities for security"
+      - framework: "ISO/IEC 42001:2023"
+        id: "Clause 5.1"
+        relationship: "Direct"
+        notes: "Both establish leadership commitment and accountability"
+      - framework: "NIST AI RMF 1.0"
+        id: "GOVERN 2.1"
+        relationship: "Direct"
+        notes: "Both establish accountability structures for risk management outcomes"
+
+  - source:
+      framework: "ISO/IEC 42001:2023"
+      id: "A.3.2"
+    targets:
+      - framework: "NIST AI RMF 1.0"
+        id: "GOVERN 2.1"
+        relationship: "Direct"
+        notes: "Both define roles, responsibilities, and lines of communication for AI risk management"
+      - framework: "EU AI Act"
+        id: "Article 26"
+        relationship: "Partial"
+        notes: "Deployer obligations under EU AI Act require role assignment; partial overlap. Confirm against original framework text"
+
+  # =====================================================
+  # THEME 3: RISK ASSESSMENT PROCESSES
+  # =====================================================
+  - source:
+      framework: "ISO 27001:2022"
+      id: "Clause 6.1.2"
+    targets:
+      - framework: "NIST CSF 2.0"
+        id: "ID.RA-01"
+        relationship: "Direct"
+        notes: "Both require systematic identification of risks to information assets"
+      - framework: "ISO/IEC 42001:2023"
+        id: "Clause 6.1.2"
+        relationship: "Direct"
+        notes: "Parallel risk assessment clauses; ISO 42001 applies same methodology to AI risks"
+      - framework: "NIST AI RMF 1.0"
+        id: "MAP 5.1"
+        relationship: "Related"
+        notes: "Both require identification and documentation of risks; AI RMF is AI-specific"
+
+  - source:
+      framework: "NIST CSF 2.0"
+      id: "ID.RA-05"
+    targets:
+      - framework: "ISO 27001:2022"
+        id: "Clause 6.1.2"
+        relationship: "Direct"
+        notes: "Both require analysis and prioritization of risks based on likelihood and impact"
+      - framework: "NIST AI RMF 1.0"
+        id: "MEASURE 2.1"
+        relationship: "Related"
+        notes: "Both involve risk measurement and prioritization activities"
+
+  - source:
+      framework: "ISO/IEC 42001:2023"
+      id: "A.5.2"
+    targets:
+      - framework: "NIST AI RMF 1.0"
+        id: "MAP 1.1"
+        relationship: "Direct"
+        notes: "Both require AI system impact assessment considering intended use and affected parties"
+      - framework: "EU AI Act"
+        id: "Article 27"
+        relationship: "Direct"
+        notes: "EU AI Act Article 27 fundamental rights impact assessment closely aligns with ISO 42001 AI impact assessment"
+
+  - source:
+      framework: "EU AI Act"
+      id: "Article 9"
+    targets:
+      - framework: "ISO/IEC 42001:2023"
+        id: "Clause 6.1.2"
+        relationship: "Direct"
+        notes: "Article 9 risk management system for high-risk AI aligns with ISO 42001 risk assessment clause"
+      - framework: "NIST AI RMF 1.0"
+        id: "MANAGE 1.3"
+        relationship: "Related"
+        notes: "Both establish continuous AI risk management processes"
+
+  # =====================================================
+  # THEME 4: ACCESS CONTROL
+  # =====================================================
+  - source:
+      framework: "ISO 27001:2022"
+      id: "A.5.15"
+    targets:
+      - framework: "NIST CSF 2.0"
+        id: "PR.AA-05"
+        relationship: "Direct"
+        notes: "Both establish access control rules based on business and security requirements"
+
+  - source:
+      framework: "ISO 27001:2022"
+      id: "A.5.16"
+    targets:
+      - framework: "NIST CSF 2.0"
+        id: "PR.AA-01"
+        relationship: "Direct"
+        notes: "Both address identity management lifecycle for users and devices"
+
+  - source:
+      framework: "ISO 27001:2022"
+      id: "A.5.17"
+    targets:
+      - framework: "NIST CSF 2.0"
+        id: "PR.AA-02"
+        relationship: "Direct"
+        notes: "Both address authentication of identities prior to granting access"
+
+  - source:
+      framework: "NIST CSF 2.0"
+      id: "PR.AA-03"
+    targets:
+      - framework: "ISO 27001:2022"
+        id: "A.8.2"
+        relationship: "Direct"
+        notes: "Both address privileged access rights management"
+      - framework: "ISO 27001:2022"
+        id: "A.8.3"
+        relationship: "Related"
+        notes: "Information access restriction supports authentication outcomes"
+
+  # =====================================================
+  # THEME 5: SUPPLIER AND THIRD-PARTY RISK
+  # =====================================================
+  - source:
+      framework: "ISO 27001:2022"
+      id: "A.5.19"
+    targets:
+      - framework: "NIST CSF 2.0"
+        id: "GV.SC-01"
+        relationship: "Direct"
+        notes: "Both establish supplier relationship security management programs"
+      - framework: "ISO/IEC 42001:2023"
+        id: "A.10.2"
+        relationship: "Related"
+        notes: "ISO 42001 extends supplier management to AI system providers"
+
+  - source:
+      framework: "NIST CSF 2.0"
+      id: "GV.SC-05"
+    targets:
+      - framework: "ISO 27001:2022"
+        id: "A.5.20"
+        relationship: "Direct"
+        notes: "Both require addressing security in supplier agreements and contracts"
+      - framework: "ISO/IEC 42001:2023"
+        id: "A.10.3"
+        relationship: "Related"
+        notes: "ISO 42001 requires agreements addressing AI-specific responsibilities with suppliers"
+
+  - source:
+      framework: "ISO/IEC 42001:2023"
+      id: "A.10.2"
+    targets:
+      - framework: "NIST AI RMF 1.0"
+        id: "GOVERN 6.1"
+        relationship: "Direct"
+        notes: "Both address third-party AI risks including data, models, and services from external providers"
+      - framework: "EU AI Act"
+        id: "Article 25"
+        relationship: "Partial"
+        notes: "EU AI Act Article 25 addresses responsibilities along the AI value chain. Confirm against original framework text"
+
+  - source:
+      framework: "NIST CSF 2.0"
+      id: "GV.SC-07"
+    targets:
+      - framework: "ISO 27001:2022"
+        id: "A.5.22"
+        relationship: "Direct"
+        notes: "Both address ongoing monitoring and review of supplier security performance"
+      - framework: "NIST AI RMF 1.0"
+        id: "GOVERN 6.2"
+        relationship: "Related"
+        notes: "Both establish processes for monitoring third-party risks over time"
+
+  # =====================================================
+  # THEME 6: INCIDENT MANAGEMENT
+  # =====================================================
+  - source:
+      framework: "ISO 27001:2022"
+      id: "A.5.24"
+    targets:
+      - framework: "NIST CSF 2.0"
+        id: "RS.MA-01"
+        relationship: "Direct"
+        notes: "Both require planning and preparation for incident management"
+
+  - source:
+      framework: "ISO 27001:2022"
+      id: "A.5.25"
+    targets:
+      - framework: "NIST CSF 2.0"
+        id: "DE.AE-02"
+        relationship: "Related"
+        notes: "Assessment of events supports decision on whether they constitute incidents"
+      - framework: "NIST CSF 2.0"
+        id: "RS.AN-03"
+        relationship: "Related"
+        notes: "Incident analysis aligns with event assessment activities"
+
+  - source:
+      framework: "ISO 27001:2022"
+      id: "A.5.26"
+    targets:
+      - framework: "NIST CSF 2.0"
+        id: "RS.MA-02"
+        relationship: "Direct"
+        notes: "Both address response activities once an incident is confirmed"
+      - framework: "ISO/IEC 42001:2023"
+        id: "A.8.4"
+        relationship: "Related"
+        notes: "ISO 42001 extends incident reporting to AI-specific events and outcomes"
+
+  - source:
+      framework: "EU AI Act"
+      id: "Article 73"
+    targets:
+      - framework: "ISO/IEC 42001:2023"
+        id: "A.8.4"
+        relationship: "Direct"
+        notes: "Both require reporting of serious incidents involving AI systems"
+      - framework: "NIST AI RMF 1.0"
+        id: "MANAGE 4.3"
+        relationship: "Related"
+        notes: "Both address response to AI incidents and adverse outcomes"
+
+  # =====================================================
+  # THEME 7: AWARENESS AND TRAINING
+  # =====================================================
+  - source:
+      framework: "ISO 27001:2022"
+      id: "A.6.3"
+    targets:
+      - framework: "NIST CSF 2.0"
+        id: "PR.AT-01"
+        relationship: "Direct"
+        notes: "Both require security awareness training for personnel"
+      - framework: "ISO/IEC 42001:2023"
+        id: "Clause 7.3"
+        relationship: "Related"
+        notes: "ISO 42001 clause 7.3 addresses AI-specific awareness; same outcome, different scope"
+
+  - source:
+      framework: "NIST CSF 2.0"
+      id: "PR.AT-02"
+    targets:
+      - framework: "ISO 27001:2022"
+        id: "A.6.3"
+        relationship: "Direct"
+        notes: "Both address specialized role-based security training"
+      - framework: "NIST AI RMF 1.0"
+        id: "GOVERN 2.2"
+        relationship: "Related"
+        notes: "AI RMF addresses training for personnel with AI-related responsibilities"
+
+  - source:
+      framework: "EU AI Act"
+      id: "Article 4"
+    targets:
+      - framework: "ISO/IEC 42001:2023"
+        id: "Clause 7.3"
+        relationship: "Direct"
+        notes: "EU AI Act Article 4 AI literacy requirements align with ISO 42001 awareness clause"
+      - framework: "NIST AI RMF 1.0"
+        id: "GOVERN 2.2"
+        relationship: "Related"
+        notes: "Both establish workforce capability requirements for AI"
+
+  # =====================================================
+  # THEME 8: DATA GOVERNANCE
+  # =====================================================
+  - source:
+      framework: "ISO 27001:2022"
+      id: "A.5.12"
+    targets:
+      - framework: "NIST CSF 2.0"
+        id: "ID.AM-07"
+        relationship: "Direct"
+        notes: "Both address classification of information and data assets"
+      - framework: "ISO/IEC 42001:2023"
+        id: "A.7.2"
+        relationship: "Related"
+        notes: "ISO 42001 data management extends classification concepts to AI training data"
+
+  - source:
+      framework: "ISO/IEC 42001:2023"
+      id: "A.7.2"
+    targets:
+      - framework: "NIST AI RMF 1.0"
+        id: "MAP 2.3"
+        relationship: "Direct"
+        notes: "Both require documentation of data used for AI systems including provenance and quality"
+      - framework: "EU AI Act"
+        id: "Article 10"
+        relationship: "Direct"
+        notes: "EU AI Act Article 10 data and data governance requirements align with ISO 42001 A.7.2 for high-risk AI"
+
+  - source:
+      framework: "ISO/IEC 42001:2023"
+      id: "A.7.4"
+    targets:
+      - framework: "NIST AI RMF 1.0"
+        id: "MEASURE 2.8"
+        relationship: "Related"
+        notes: "Both address data quality assessment for AI systems"
+      - framework: "EU AI Act"
+        id: "Article 10"
+        relationship: "Related"
+        notes: "Data quality for high-risk AI training, validation, and testing datasets"
+
+  - source:
+      framework: "NIST CSF 2.0"
+      id: "PR.DS-01"
+    targets:
+      - framework: "ISO 27001:2022"
+        id: "A.8.24"
+        relationship: "Direct"
+        notes: "Both require cryptographic protection of data at rest"
+
+  # =====================================================
+  # THEME 9: LOGGING AND MONITORING
+  # =====================================================
+  - source:
+      framework: "ISO 27001:2022"
+      id: "A.8.15"
+    targets:
+      - framework: "NIST CSF 2.0"
+        id: "DE.CM-01"
+        relationship: "Direct"
+        notes: "Both require generation and retention of event logs from systems and networks"
+      - framework: "ISO/IEC 42001:2023"
+        id: "A.6.2.6"
+        relationship: "Related"
+        notes: "ISO 42001 extends logging concept to AI system operational events"
+
+  - source:
+      framework: "ISO 27001:2022"
+      id: "A.8.16"
+    targets:
+      - framework: "NIST CSF 2.0"
+        id: "DE.CM-09"
+        relationship: "Direct"
+        notes: "Both require monitoring activities to detect anomalous behavior"
+
+  - source:
+      framework: "EU AI Act"
+      id: "Article 12"
+    targets:
+      - framework: "ISO/IEC 42001:2023"
+        id: "A.6.2.6"
+        relationship: "Direct"
+        notes: "EU AI Act Article 12 automatic logging requirements for high-risk AI align with ISO 42001 AI logging controls"
+      - framework: "NIST AI RMF 1.0"
+        id: "MEASURE 3.1"
+        relationship: "Related"
+        notes: "Both support ongoing measurement and traceability of AI system behavior"
+
+  - source:
+      framework: "NIST AI RMF 1.0"
+        
+      id: "MANAGE 4.1"
+    targets:
+      - framework: "ISO/IEC 42001:2023"
+        id: "A.6.2.6"
+        relationship: "Related"
+        notes: "Both address post-deployment monitoring of AI system performance and risks"
+      - framework: "EU AI Act"
+        id: "Article 72"
+        relationship: "Related"
+        notes: "EU AI Act Article 72 post-market monitoring system aligns with ongoing AI monitoring"
+
+  # =====================================================
+  # THEME 10: HUMAN OVERSIGHT OF AI SYSTEMS
+  # =====================================================
+  - source:
+      framework: "EU AI Act"
+      id: "Article 14"
+    targets:
+      - framework: "ISO/IEC 42001:2023"
+        id: "A.9.2"
+        relationship: "Direct"
+        notes: "EU AI Act Article 14 human oversight requirements align directly with ISO 42001 A.9.2 human oversight controls"
+      - framework: "NIST AI RMF 1.0"
+        id: "MANAGE 2.3"
+        relationship: "Direct"
+        notes: "Both require mechanisms for human intervention in AI system operation"
+
+  - source:
+      framework: "ISO/IEC 42001:2023"
+      id: "A.9.2"
+    targets:
+      - framework: "NIST AI RMF 1.0"
+        id: "GOVERN 5.1"
+        relationship: "Related"
+        notes: "Both establish processes for stakeholder engagement and human-in-the-loop oversight"
+
+  - source:
+      framework: "NIST AI RMF 1.0"
+      id: "MEASURE 2.7"
+    targets:
+      - framework: "ISO/IEC 42001:2023"
+        id: "A.6.2.8"
+        relationship: "Related"
+        notes: "Both address AI system reliability and robustness evaluation supporting safe human oversight. Confirm against original framework text"
+      - framework: "EU AI Act"
+        id: "Article 15"
+        relationship: "Related"
+        notes: "Article 15 accuracy, robustness, and cybersecurity requirements support oversight capability"
+
+  - source:
+      framework: "ISO/IEC 42001:2023"
+      id: "A.6.2.4"
+    targets:
+      - framework: "EU AI Act"
+        id: "Article 13"
+        relationship: "Direct"
+        notes: "Both require transparency and information provision to users/deployers of AI systems"
+      - framework: "NIST AI RMF 1.0"
+        id: "MEASURE 2.9"
+        relationship: "Related"
+        notes: "Both address explainability and interpretability of AI system outputs"
