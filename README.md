@@ -18,10 +18,6 @@ Takes a control from any of five frameworks and instantly returns the equivalent
 
 ## Frameworks Covered
 
-## Frameworks Covered
-
-## Frameworks Covered
-
 | Framework | Version | Status | Items |
 |-----------|---------|--------|-------|
 | NIST CSF | 2.0 | Complete | 106 subcategories |
@@ -38,8 +34,6 @@ Takes a control from any of five frameworks and instantly returns the equivalent
 - TPRM teams evaluating vendors against multiple standards
 - AI governance specialists aligning ISO 42001 with NIST AI RMF
 - Compliance leads building unified control libraries
-
-## Roadmap
 
 ## Roadmap
 
