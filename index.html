@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GRC Control Crosswalk</title>
+
+  <!--
+    GRC Control Crosswalk — single-file browser app.
+    Mirrors the Python CLI: direct lookup, keyword search, framework browser.
+    All data is fetched at runtime from raw.githubusercontent.com (no backend).
+    js-yaml (CDN) is the only external dependency.
+  -->
+
+  <!-- js-yaml for parsing the YAML data files -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
+
+  <style>
+    /* ----------  Design tokens  ---------- */
+    :root {
+      --navy:        #1F3864;
+      --navy-dark:   #162A4D;
+      --accent:      #2E75B6;
+      --accent-soft: #DCE7F3;
+      --bg:          #F5F5F5;
+      --card:        #FFFFFF;
+      --text:        #21262D;
+      --muted:       #5A6472;
+      --border:      #E2E6EC;
+
+      /* relationship pill colors */
+      --pill-direct-bg:  #E3F4E6;  --pill-direct-fg:  #1E7A33;
+      --pill-related-bg: #DEEAF7;  --pill-related-fg: #1F5FA0;
+      --pill-partial-bg: #FCEBD8;  --pill-partial-fg: #B5651A;
+
+      --radius: 10px;
+      --shadow: 0 1px 3px rgba(16,32,64,.08), 0 4px 16px rgba(16,32,64,.05);
+      --font: Calibri, "Segoe UI", Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body { margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ----------  Header  ---------- */
+    header {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-dark) 100%);
+      color: #fff;
+      padding: 30px 24px 26px;
+      border-bottom: 4px solid var(--accent);
+    }
+    .header-inner { max-width: 1040px; margin: 0 auto; }
+    header h1 {
+      margin: 0;
+      font-size: 1.7rem;
+      letter-spacing: .2px;
+      font-weight: 700;
+    }
+    header .tagline {
+      margin: 6px 0 0;
+      color: #C7D6EC;
+      font-size: 1rem;
+      max-width: 640px;
+    }
+    header .frameworks-line {
+      margin-top: 12px;
+      font-size: .82rem;
+      color: #9FB6D6;
+    }
+
+    /* ----------  Layout shell  ---------- */
+    main {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    /* ----------  Tabs  ---------- */
+    .tabs {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 22px;
+    }
+    .tab {
+      appearance: none;
+      border: none;
+      background: transparent;
+      font-family: var(--font);
+      font-size: .98rem;
+      font-weight: 600;
+      color: var(--muted);
+      padding: 12px 18px;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -1px;
+      transition: color .15s ease, border-color .15s ease;
+    }
+    .tab:hover { color: var(--navy); }
+    .tab[aria-selected="true"] {
+      color: var(--navy);
+      border-bottom-color: var(--accent);
+    }
+
+    .panel { display: none; }
+    .panel.active { display: block; animation: fade .25s ease; }
+    @keyframes fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+    /* ----------  Search controls  ---------- */
+    .mode-intro { color: var(--muted); margin: 0 0 14px; font-size: .95rem; }
+
+    .search-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    .search-row input[type="text"],
+    .search-row select {
+      flex: 1 1 320px;
+      min-width: 0;
+      font-family: var(--font);
+      font-size: 1rem;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: #fff;
+      color: var(--text);
+      transition: border-color .15s ease, box-shadow .15s ease;
+    }
+    .search-row input[type="text"]:focus,
+    .search-row select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+    button.action {
+      flex: 0 0 auto;
+      appearance: none;
+      border: none;
+      background: var(--accent);
+      color: #fff;
+      font-family: var(--font);
+      font-size: 1rem;
+      font-weight: 600;
+      padding: 12px 22px;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: background .15s ease, transform .05s ease;
+    }
+    button.action:hover { background: #285F93; }
+    button.action:active { transform: translateY(1px); }
+    button.action:disabled { background: #9FB2C9; cursor: not-allowed; }
+
+    /* ----------  Result cards  ---------- */
+    .results { display: flex; flex-direction: column; gap: 16px; }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--accent);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 20px 22px;
+    }
+    .card .fw-name {
+      font-size: .8rem;
+      font-weight: 700;
+      letter-spacing: .6px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+    .card .ctrl-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--navy);
+      margin: 0 0 6px;
+    }
+    .card .ctrl-title .cid {
+      font-family: "Consolas", "SFMono-Regular", monospace;
+      background: var(--accent-soft);
+      color: var(--navy);
+      padding: 1px 7px;
+      border-radius: 5px;
+      margin-right: 8px;
+      font-size: .92rem;
+    }
+    .card .ctrl-desc { color: var(--text); margin: 6px 0 0; }
+    .card .ctrl-meta { color: var(--muted); font-size: .82rem; margin-top: 8px; }
+
+    /* mapping sub-sections */
+    .map-section { margin-top: 18px; }
+    .map-section h4 {
+      font-size: .82rem;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      color: var(--muted);
+      margin: 0 0 10px;
+      border-top: 1px solid var(--border);
+      padding-top: 14px;
+    }
+    .map-item {
+      padding: 10px 0;
+      border-bottom: 1px dashed var(--border);
+    }
+    .map-item:last-child { border-bottom: none; }
+    .map-item .map-head {
+      display: flex;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .map-item .map-fw {
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .4px;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+    .map-item .map-id {
+      font-family: "Consolas", "SFMono-Regular", monospace;
+      font-weight: 700;
+      color: var(--navy);
+      font-size: .9rem;
+    }
+    .map-item .map-name { color: var(--text); font-weight: 600; }
+    .map-item .map-notes { color: var(--muted); font-size: .86rem; margin-top: 4px; }
+
+    /* relationship pills */
+    .pill {
+      display: inline-block;
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .3px;
+      padding: 2px 10px;
+      border-radius: 999px;
+      text-transform: uppercase;
+    }
+    .pill.direct  { background: var(--pill-direct-bg);  color: var(--pill-direct-fg); }
+    .pill.related { background: var(--pill-related-bg); color: var(--pill-related-fg); }
+    .pill.partial { background: var(--pill-partial-bg); color: var(--pill-partial-fg); }
+    .pill.unknown { background: #ECEFF3; color: var(--muted); }
+
+    /* compact list rows (keyword + browser modes) */
+    .list-row {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 11px 16px;
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .list-row .lr-fw {
+      font-size: .68rem; font-weight: 700; letter-spacing: .4px;
+      text-transform: uppercase; color: var(--accent);
+      flex: 0 0 130px;
+    }
+    .list-row .lr-id {
+      font-family: "Consolas", "SFMono-Regular", monospace;
+      font-weight: 700; color: var(--navy); font-size: .9rem;
+      flex: 0 0 110px;
+    }
+    .list-row .lr-name { color: var(--text); flex: 1 1 240px; }
+
+    .scroll-box { max-height: 540px; overflow-y: auto; padding-right: 4px; display: flex; flex-direction: column; gap: 8px; }
+
+    /* ----------  Status / feedback  ---------- */
+    .count-note { color: var(--muted); font-size: .88rem; margin: 0 0 12px; }
+
+    .empty, .error, .hint {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      color: var(--muted);
+    }
+    .error { border-left: 4px solid #C0392B; color: #8A2A20; }
+    .error code { background: #f6e4e1; padding: 1px 5px; border-radius: 4px; }
+    .hint b { color: var(--navy); }
+    .suggest-btn {
+      appearance: none; border: 1px solid var(--accent); background: #fff;
+      color: var(--accent); font-family: var(--font); font-weight: 600;
+      padding: 3px 12px; border-radius: 999px; cursor: pointer; font-size: .9rem;
+    }
+    .suggest-btn:hover { background: var(--accent-soft); }
+
+    /* ----------  Loading overlay  ---------- */
+    #loading {
+      position: fixed; inset: 0; z-index: 50;
+      background: rgba(245,245,245,.94);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 16px; text-align: center; padding: 24px;
+    }
+    .spinner {
+      width: 46px; height: 46px;
+      border: 4px solid var(--accent-soft);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #loading .ld-text { color: var(--navy); font-weight: 600; }
+    #loading .ld-sub  { color: var(--muted); font-size: .85rem; }
+    #loading.hidden { display: none; }
+
+    /* ----------  Footer  ---------- */
+    footer {
+      max-width: 1040px;
+      margin: 8px auto 0;
+      padding: 22px 24px 40px;
+      color: var(--muted);
+      font-size: .9rem;
+      border-top: 1px solid var(--border);
+    }
+    footer a { color: var(--accent); text-decoration: none; font-weight: 600; }
+    footer a:hover { text-decoration: underline; }
+
+    /* ----------  Responsive  ---------- */
+    @media (max-width: 600px) {
+      header { padding: 24px 18px 22px; }
+      header h1 { font-size: 1.4rem; }
+      main { padding: 18px 16px; }
+      .search-row input[type="text"],
+      .search-row select,
+      button.action { flex: 1 1 100%; }
+      .tab { padding: 10px 12px; font-size: .92rem; }
+      .list-row .lr-fw, .list-row .lr-id { flex-basis: auto; }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- ==========  Loading overlay  ========== -->
+  <div id="loading">
+    <div class="spinner" aria-hidden="true"></div>
+    <div class="ld-text">Loading framework data…</div>
+    <div class="ld-sub">Fetching 5 frameworks + control mappings</div>
+  </div>
+
+  <!-- ==========  Header  ========== -->
+  <header>
+    <div class="header-inner">
+      <h1>GRC Control Crosswalk</h1>
+      <p class="tagline">
+        Map and trace controls across cybersecurity and AI-governance frameworks —
+        lookup a single control, search by keyword, or browse a full framework.
+      </p>
+      <p class="frameworks-line">
+        NIST CSF 2.0 &nbsp;·&nbsp; ISO/IEC 27001:2022 &nbsp;·&nbsp; NIST AI RMF 1.0 &nbsp;·&nbsp; ISO/IEC 42001:2023 &nbsp;·&nbsp; EU AI Act
+      </p>
+    </div>
+  </header>
+
+  <!-- ==========  Main  ========== -->
+  <main>
+    <!-- Tab navigation -->
+    <div class="tabs" role="tablist" aria-label="Crosswalk modes">
+      <button class="tab" role="tab" aria-selected="true"  data-tab="lookup">Direct Lookup</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="keyword">Keyword Search</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="browse">Framework Browser</button>
+    </div>
+
+    <!-- ----- MODE A: Direct lookup ----- -->
+    <section class="panel active" id="panel-lookup" role="tabpanel">
+      <p class="mode-intro">
+        Enter a control ID. The source framework is detected automatically, and both
+        outgoing and incoming mappings are shown.
+      </p>
+      <div class="search-row">
+        <input type="text" id="lookup-input"
+               placeholder="Enter control ID (e.g., A.5.1, GV.PO-01, GOVERN 1.1)"
+               autocomplete="off" spellcheck="false" />
+        <button class="action" id="lookup-btn">Search</button>
+      </div>
+      <div class="results" id="lookup-results"></div>
+    </section>
+
+    <!-- ----- MODE B: Keyword search ----- -->
+    <section class="panel" id="panel-keyword" role="tabpanel">
+      <p class="mode-intro">
+        Search control names and descriptions across all five frameworks. Shows the top 15 matches.
+      </p>
+      <div class="search-row">
+        <input type="text" id="keyword-input"
+               placeholder="Search by keyword (e.g., policy, access, encryption)"
+               autocomplete="off" spellcheck="false" />
+        <button class="action" id="keyword-btn">Search</button>
+      </div>
+      <div class="results" id="keyword-results"></div>
+    </section>
+
+    <!-- ----- MODE C: Framework browser ----- -->
+    <section class="panel" id="panel-browse" role="tabpanel">
+      <p class="mode-intro">Select a framework and list every control it contains.</p>
+      <div class="search-row">
+        <select id="browse-select" aria-label="Select framework">
+          <option value="NIST_CSF">NIST CSF 2.0</option>
+          <option value="ISO_27001">ISO/IEC 27001:2022</option>
+          <option value="NIST_AI_RMF">NIST AI RMF 1.0</option>
+          <option value="ISO_42001">ISO/IEC 42001:2023</option>
+          <option value="EU_AI_ACT">EU AI Act</option>
+        </select>
+        <button class="action" id="browse-btn">Show all controls</button>
+      </div>
+      <div class="results" id="browse-results"></div>
+    </section>
+  </main>
+
+  <!-- ==========  Footer  ========== -->
+  <footer>
+    Open-source GRC tooling ·
+    <a href="https://github.com/Breckcyber/grc-control-crosswalk" target="_blank" rel="noopener noreferrer">
+      github.com/Breckcyber/grc-control-crosswalk
+    </a>
+    · Mappings are practitioner-judgment; confirm against original framework text.
+  </footer>
+
+  <!-- ==========================================================
+       Application logic
+       ========================================================== -->
+  <script>
+  "use strict";
+
+  /* ----------------------------------------------------------------
+     1. CONFIG — canonical frameworks + raw data URLs
+     ---------------------------------------------------------------- */
+  const RAW_BASE = "https://raw.githubusercontent.com/Breckcyber/grc-control-crosswalk/main/data";
+
+  // Each framework has a stable internal KEY, a display LABEL, and a source URL.
+  // The KEY is what all indexes are built on, so naming differences between the
+  // control files and the mappings file (e.g. "ISO 27001:2022" vs
+  // "ISO/IEC 27001:2022") never break the links.
+  const FRAMEWORKS = [
+    { key: "NIST_CSF",    label: "NIST CSF 2.0",        url: RAW_BASE + "/nist-csf.yaml"   },
+    { key: "ISO_27001",   label: "ISO/IEC 27001:2022",  url: RAW_BASE + "/iso-27001.yaml"  },
+    { key: "NIST_AI_RMF", label: "NIST AI RMF 1.0",     url: RAW_BASE + "/nist-ai-rmf.yaml"},
+    { key: "ISO_42001",   label: "ISO/IEC 42001:2023",  url: RAW_BASE + "/iso-42001.yaml"  },
+    { key: "EU_AI_ACT",   label: "EU AI Act",           url: RAW_BASE + "/eu-ai-act.yaml"  },
+  ];
+  const MAPPINGS_URL = RAW_BASE + "/mappings.yaml";
+
+  /* ----------------------------------------------------------------
+     2. NORMALIZATION HELPERS
+     ---------------------------------------------------------------- */
+
+  // Collapse any framework-name spelling into one of the canonical KEYs.
+  // Handles "ISO 27001:2022", "ISO/IEC 27001:2022", "NIST CSF 2.0", etc.
+  function normalizeFramework(name) {
+    if (!name) return null;
+    const s = String(name).toLowerCase().replace(/[^a-z0-9]/g, ""); // strip spaces/slashes/colons
+    if (s.includes("42001")) return "ISO_42001";
+    if (s.includes("27001")) return "ISO_27001";
+    if (s.includes("csf")) return "NIST_CSF";
+    if (s.includes("airmf") || (s.includes("ai") && s.includes("rmf"))) return "NIST_AI_RMF";
+    if (s.includes("euaiact") || (s.includes("eu") && s.includes("act"))) return "EU_AI_ACT";
+    if (s.includes("aiact")) return "EU_AI_ACT";
+    return null; // unknown framework string
+  }
+
+  // Normalize a control ID for matching: trim, collapse internal whitespace,
+  // uppercase. "govern 1.1 " -> "GOVERN 1.1", "a.5.1" -> "A.5.1".
+  function normalizeId(id) {
+    if (id === undefined || id === null) return "";
+    return String(id).trim().replace(/\s+/g, " ").toUpperCase();
+  }
+
+  // Human-readable label for a framework key (falls back to a raw string).
+  function labelFor(key, fallback) {
+    const f = FRAMEWORKS.find(fw => fw.key === key);
+    return (f && f.label) || fallback || key || "Unknown framework";
+  }
+
+  // Map a relationship string to a pill CSS class.
+  function pillClass(rel) {
+    const r = String(rel || "").toLowerCase();
+    if (r === "direct") return "direct";
+    if (r === "related") return "related";
+    if (r === "partial") return "partial";
+    return "unknown";
+  }
+
+  /* ----------------------------------------------------------------
+     3. STATE — populated by buildIndexes()
+     ---------------------------------------------------------------- */
+  const state = {
+    controls:    {},          // key -> Map(idNorm -> control object)
+    allControls: [],          // flat array for keyword search + "did you mean"
+    idIndex:     new Map(),    // idNorm -> [ {frameworkKey, ...control} ] (for auto-detect)
+    forward:     new Map(),    // "KEY::IDNORM" -> [ outgoing mapping targets ]
+    reverse:     new Map(),    // "KEY::IDNORM" -> [ incoming mapping sources ]
+  };
+
+  function mapKey(frameworkKey, idNorm) { return frameworkKey + "::" + idNorm; }
+
+  function pushTo(map, k, v) {
+    if (!map.has(k)) map.set(k, []);
+    map.get(k).push(v);
+  }
+
+  /* ----------------------------------------------------------------
+     4. DATA LOADING
+     ---------------------------------------------------------------- */
+  async function fetchYaml(url) {
+    // fetch + parse one YAML file; throws with a clear message on failure
+    let res;
+    try {
+      res = await fetch(url, { cache: "no-cache" });
+    } catch (netErr) {
+      throw new Error("Network error fetching " + url + " (" + netErr.message + ")");
+    }
+    if (!res.ok) throw new Error("HTTP " + res.status + " fetching " + url);
+    const text = await res.text();
+    try {
+      return jsyaml.load(text);
+    } catch (parseErr) {
+      throw new Error("YAML parse error in " + url + ": " + parseErr.message);
+    }
+  }
+
+  async function loadAll() {
+    // Fetch every framework + the mappings file in parallel.
+    const frameworkPromises = FRAMEWORKS.map(fw =>
+      fetchYaml(fw.url).then(data => ({ fw, data }))
+    );
+    const [frameworkResults, mappingsData] = await Promise.all([
+      Promise.all(frameworkPromises),
+      fetchYaml(MAPPINGS_URL),
+    ]);
+    return { frameworkResults, mappingsData };
+  }
+
+  /* ----------------------------------------------------------------
+     5. INDEX BUILDING
+     ---------------------------------------------------------------- */
+  function buildIndexes({ frameworkResults, mappingsData }) {
+    // ---- 5a. Controls -> per-framework maps, flat list, id index ----
+    frameworkResults.forEach(({ fw, data }) => {
+      const m = new Map();
+      const controls = (data && Array.isArray(data.controls)) ? data.controls : [];
+      controls.forEach(c => {
+        if (!c || c.id === undefined) return;
+        const idNorm = normalizeId(c.id);
+        const record = {
+          frameworkKey: fw.key,
+          frameworkLabel: fw.label,
+          id: c.id,
+          idNorm: idNorm,
+          name: c.name || "",
+          description: c.description || "",
+          // keep any descriptive grouping fields if present (varies per file)
+          group: c.function || c.theme || c.category || c.clause || "",
+        };
+        m.set(idNorm, record);
+        state.allControls.push(record);
+        pushTo(state.idIndex, idNorm, record);
+      });
+      state.controls[fw.key] = m;
+    });
+
+    // ---- 5b. Mappings -> forward (OUT) and reverse (FROM) indexes ----
+    // This is the bidirectional logic: every mapping is indexed twice so a
+    // control is found whether it appears as a source OR only as a target.
+    const mappings = (mappingsData && Array.isArray(mappingsData.mappings))
+      ? mappingsData.mappings : [];
+
+    mappings.forEach(entry => {
+      if (!entry || !entry.source) return;
+      const srcKey   = normalizeFramework(entry.source.framework);
+      const srcIdRaw = entry.source.id;
+      const srcId    = normalizeId(srcIdRaw);
+      const targets  = Array.isArray(entry.targets) ? entry.targets : [];
+
+      targets.forEach(t => {
+        if (!t) return;
+        const tgtKey   = normalizeFramework(t.framework);
+        const tgtIdRaw = t.id;
+        const tgtId    = normalizeId(tgtIdRaw);
+
+        // OUTGOING: source --> target
+        if (srcKey) {
+          pushTo(state.forward, mapKey(srcKey, srcId), {
+            frameworkKey: tgtKey,
+            frameworkRaw: t.framework,
+            id: tgtIdRaw,
+            idNorm: tgtId,
+            relationship: t.relationship || "",
+            notes: t.notes || "",
+          });
+        }
+        // INCOMING: target <-- source  (reverse direction)
+        if (tgtKey) {
+          pushTo(state.reverse, mapKey(tgtKey, tgtId), {
+            frameworkKey: srcKey,
+            frameworkRaw: entry.source.framework,
+            id: srcIdRaw,
+            idNorm: srcId,
+            relationship: t.relationship || "",
+            notes: t.notes || "",
+          });
+        }
+      });
+    });
+
+    // ---- 5c. De-duplicate mapping lists (same target via multiple themes) ----
+    for (const m of [state.forward, state.reverse]) {
+      for (const [k, list] of m) {
+        const seen = new Set();
+        m.set(k, list.filter(item => {
+          const sig = item.frameworkKey + "|" + item.idNorm + "|" + item.relationship;
+          if (seen.has(sig)) return false;
+          seen.add(sig);
+          return true;
+        }));
+      }
+    }
+  }
+
+  /* ----------------------------------------------------------------
+     6. LOOKUP / SEARCH FUNCTIONS  (pure — return data, no DOM)
+     ---------------------------------------------------------------- */
+
+  // Resolve a control's display name from the loaded control data.
+  function resolveName(frameworkKey, idNorm) {
+    const fwMap = state.controls[frameworkKey];
+    if (fwMap && fwMap.has(idNorm)) return fwMap.get(idNorm).name;
+    return null; // mapped control not present in the control files
+  }
+
+  // MODE A: find every control matching an ID across all frameworks (auto-detect).
+  function lookupControl(rawInput) {
+    const idNorm = normalizeId(rawInput);
+    const matches = state.idIndex.get(idNorm) || [];
+    return matches.map(ctrl => ({
+      control: ctrl,
+      out:  state.forward.get(mapKey(ctrl.frameworkKey, idNorm)) || [],
+      from: state.reverse.get(mapKey(ctrl.frameworkKey, idNorm)) || [],
+    }));
+  }
+
+  // "Did you mean" — closest known IDs by Levenshtein distance.
+  function suggestIds(rawInput, limit = 3) {
+    const target = normalizeId(rawInput);
+    if (!target) return [];
+    const seen = new Set();
+    const scored = [];
+    for (const c of state.allControls) {
+      if (seen.has(c.idNorm)) continue;
+      seen.add(c.idNorm);
+      const d = levenshtein(target, c.idNorm);
+      scored.push({ id: c.id, idNorm: c.idNorm, dist: d });
+    }
+    // accept suggestions within a forgiving threshold relative to length
+    const threshold = Math.max(2, Math.ceil(target.length * 0.5));
+    return scored
+      .filter(s => s.dist > 0 && s.dist <= threshold)
+      .sort((a, b) => a.dist - b.dist || a.idNorm.localeCompare(b.idNorm))
+      .slice(0, limit);
+  }
+
+  // Classic iterative Levenshtein edit distance.
+  function levenshtein(a, b) {
+    if (a === b) return 0;
+    const m = a.length, n = b.length;
+    if (m === 0) return n;
+    if (n === 0) return m;
+    let prev = new Array(n + 1);
+    for (let j = 0; j <= n; j++) prev[j] = j;
+    for (let i = 1; i <= m; i++) {
+      let curr = [i];
+      for (let j = 1; j <= n; j++) {
+        const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+        curr[j] = Math.min(prev[j] + 1, curr[j - 1] + 1, prev[j - 1] + cost);
+      }
+      prev = curr;
+    }
+    return prev[n];
+  }
+
+  // MODE B: keyword search over id + name + description; ranked, top 15.
+  function keywordSearch(rawQuery, limit = 15) {
+    const q = String(rawQuery || "").trim().toLowerCase();
+    if (!q) return [];
+    const terms = q.split(/\s+/);
+    const results = [];
+    for (const c of state.allControls) {
+      const hayName = (c.name || "").toLowerCase();
+      const hayDesc = (c.description || "").toLowerCase();
+      const hayId   = (c.id || "").toLowerCase();
+      let score = 0;
+      for (const term of terms) {
+        if (hayId.includes(term))   score += 6;   // ID hit is strongest
+        if (hayName.includes(term)) score += 4;   // name hit next
+        if (hayDesc.includes(term)) score += 1;   // description hit weakest
+      }
+      if (score > 0) results.push({ control: c, score });
+    }
+    results.sort((a, b) =>
+      b.score - a.score ||
+      a.control.frameworkLabel.localeCompare(b.control.frameworkLabel) ||
+      a.control.idNorm.localeCompare(b.control.idNorm)
+    );
+    return results.slice(0, limit).map(r => r.control);
+  }
+
+  // MODE C: every control in a framework, sorted by ID.
+  function browseFramework(frameworkKey) {
+    const fwMap = state.controls[frameworkKey];
+    if (!fwMap) return [];
+    return Array.from(fwMap.values())
+      .sort((a, b) => a.idNorm.localeCompare(b.idNorm, undefined, { numeric: true }));
+  }
+
+  /* ----------------------------------------------------------------
+     7. RENDERING  (data -> DOM). escapeHtml guards all dynamic text.
+     ---------------------------------------------------------------- */
+  function escapeHtml(s) {
+    return String(s === undefined || s === null ? "" : s)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+  }
+
+  // Render one mapping row (used by both OUT and FROM sections).
+  function renderMapItem(item) {
+    const fwLabel = labelFor(item.frameworkKey, item.frameworkRaw);
+    const name = resolveName(item.frameworkKey, item.idNorm);
+    const rel = item.relationship || "";
+    const relHtml = rel
+      ? '<span class="pill ' + pillClass(rel) + '">' + escapeHtml(rel) + '</span>'
+      : "";
+    return '' +
+      '<div class="map-item">' +
+        '<div class="map-head">' +
+          '<span class="map-fw">' + escapeHtml(fwLabel) + '</span>' +
+          '<span class="map-id">' + escapeHtml(item.id) + '</span>' +
+          (name ? '<span class="map-name">' + escapeHtml(name) + '</span>' : '') +
+          relHtml +
+        '</div>' +
+        (item.notes ? '<div class="map-notes">' + escapeHtml(item.notes) + '</div>' : '') +
+      '</div>';
+  }
+
+  // Render a full control card with OUT + FROM sections (MODE A).
+  function renderControlCard(result) {
+    const c = result.control;
+    const meta = c.group ? '<div class="ctrl-meta">' + escapeHtml(c.group) + '</div>' : '';
+
+    let outHtml;
+    if (result.out.length) {
+      outHtml = result.out.map(renderMapItem).join("");
+    } else {
+      outHtml = '<div class="map-notes">No outgoing mappings recorded.</div>';
+    }
+
+    let fromHtml;
+    if (result.from.length) {
+      fromHtml = result.from.map(renderMapItem).join("");
+    } else {
+      fromHtml = '<div class="map-notes">No controls map to this one.</div>';
+    }
+
+    return '' +
+      '<div class="card">' +
+        '<div class="fw-name">' + escapeHtml(c.frameworkLabel) + '</div>' +
+        '<h3 class="ctrl-title"><span class="cid">' + escapeHtml(c.id) + '</span>' +
+          escapeHtml(c.name) + '</h3>' +
+        (c.description ? '<p class="ctrl-desc">' + escapeHtml(c.description) + '</p>' : '') +
+        meta +
+        '<div class="map-section"><h4>Maps OUT to</h4>' + outHtml + '</div>' +
+        '<div class="map-section"><h4>Mapped FROM</h4>' + fromHtml + '</div>' +
+      '</div>';
+  }
+
+  // Compact list row (MODE B + MODE C).
+  function renderListRow(c) {
+    return '' +
+      '<div class="list-row">' +
+        '<span class="lr-fw">' + escapeHtml(c.frameworkLabel) + '</span>' +
+        '<span class="lr-id">' + escapeHtml(c.id) + '</span>' +
+        '<span class="lr-name">' + escapeHtml(c.name) + '</span>' +
+      '</div>';
+  }
+
+  /* ----------------------------------------------------------------
+     8. MODE HANDLERS — wire pure functions to the DOM
+     ---------------------------------------------------------------- */
+  function runLookup() {
+    const input = document.getElementById("lookup-input");
+    const out = document.getElementById("lookup-results");
+    const raw = input.value.trim();
+    if (!raw) { out.innerHTML = '<div class="empty">Enter a control ID to begin.</div>'; return; }
+
+    const results = lookupControl(raw);
+    if (results.length) {
+      const note = results.length > 1
+        ? '<p class="count-note">That ID appears in ' + results.length +
+          ' frameworks — showing all matches.</p>'
+        : '';
+      out.innerHTML = note + results.map(renderControlCard).join("");
+      return;
+    }
+
+    // No exact match -> offer "did you mean" suggestions.
+    const suggestions = suggestIds(raw);
+    if (suggestions.length) {
+      const btns = suggestions.map(s =>
+        '<button class="suggest-btn" data-id="' + escapeHtml(s.id) + '">' +
+        escapeHtml(s.id) + '</button>'
+      ).join(" ");
+      out.innerHTML =
+        '<div class="hint">No control found for <b>' + escapeHtml(raw) +
+        '</b>. Did you mean: ' + btns + '</div>';
+      // wire each suggestion button to re-run the lookup
+      out.querySelectorAll(".suggest-btn").forEach(b => {
+        b.addEventListener("click", () => {
+          input.value = b.getAttribute("data-id");
+          runLookup();
+        });
+      });
+    } else {
+      out.innerHTML =
+        '<div class="hint">No control found for <b>' + escapeHtml(raw) +
+        '</b>, and no close match. Try formats like <b>A.5.1</b>, <b>GV.PO-01</b>, or <b>GOVERN 1.1</b>.</div>';
+    }
+  }
+
+  function runKeyword() {
+    const input = document.getElementById("keyword-input");
+    const out = document.getElementById("keyword-results");
+    const raw = input.value.trim();
+    if (!raw) { out.innerHTML = '<div class="empty">Enter a keyword to search.</div>'; return; }
+
+    const matches = keywordSearch(raw, 15);
+    if (!matches.length) {
+      out.innerHTML = '<div class="hint">No matches for <b>' + escapeHtml(raw) + '</b>.</div>';
+      return;
+    }
+    out.innerHTML =
+      '<p class="count-note">Top ' + matches.length + ' match' +
+      (matches.length === 1 ? '' : 'es') + ' across all frameworks.</p>' +
+      '<div class="scroll-box">' + matches.map(renderListRow).join("") + '</div>';
+  }
+
+  function runBrowse() {
+    const sel = document.getElementById("browse-select");
+    const out = document.getElementById("browse-results");
+    const key = sel.value;
+    const list = browseFramework(key);
+    if (!list.length) {
+      out.innerHTML = '<div class="hint">No controls loaded for ' +
+        escapeHtml(labelFor(key)) + '.</div>';
+      return;
+    }
+    out.innerHTML =
+      '<p class="count-note">' + list.length + ' controls in ' +
+      escapeHtml(labelFor(key)) + '.</p>' +
+      '<div class="scroll-box">' + list.map(renderListRow).join("") + '</div>';
+  }
+
+  /* ----------------------------------------------------------------
+     9. UI WIRING
+     ---------------------------------------------------------------- */
+  function setupTabs() {
+    const tabs = document.querySelectorAll(".tab");
+    tabs.forEach(tab => {
+      tab.addEventListener("click", () => {
+        tabs.forEach(t => t.setAttribute("aria-selected", "false"));
+        tab.setAttribute("aria-selected", "true");
+        const id = tab.getAttribute("data-tab");
+        document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
+        document.getElementById("panel-" + id).classList.add("active");
+      });
+    });
+  }
+
+  function setupEvents() {
+    document.getElementById("lookup-btn").addEventListener("click", runLookup);
+    document.getElementById("keyword-btn").addEventListener("click", runKeyword);
+    document.getElementById("browse-btn").addEventListener("click", runBrowse);
+
+    // Enter-to-search on the two text inputs
+    document.getElementById("lookup-input").addEventListener("keydown", e => {
+      if (e.key === "Enter") runLookup();
+    });
+    document.getElementById("keyword-input").addEventListener("keydown", e => {
+      if (e.key === "Enter") runKeyword();
+    });
+  }
+
+  function showLoadError(err) {
+    const loading = document.getElementById("loading");
+    loading.innerHTML =
+      '<div class="error" style="max-width:560px">' +
+        '<strong>Could not load framework data.</strong><br>' +
+        escapeHtml(err.message) + '<br><br>' +
+        'If you opened this file locally, make sure you have an internet connection ' +
+        '(data is fetched from <code>raw.githubusercontent.com</code>). ' +
+        'When deployed to GitHub Pages or Vercel this loads automatically.' +
+      '</div>';
+  }
+
+  /* ----------------------------------------------------------------
+     10. BOOTSTRAP
+     ---------------------------------------------------------------- */
+  document.addEventListener("DOMContentLoaded", async () => {
+    setupTabs();
+    setupEvents();
+
+    if (typeof jsyaml === "undefined") {
+      showLoadError(new Error("js-yaml library failed to load from the CDN."));
+      return;
+    }
+
+    try {
+      const data = await loadAll();
+      buildIndexes(data);
+      document.getElementById("loading").classList.add("hidden");
+    } catch (err) {
+      console.error(err);
+      showLoadError(err);
+    }
+  });
+  </script>
+</body>
+</html>
