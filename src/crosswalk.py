@@ -10,8 +10,8 @@ control maps across the other governance frameworks in the data/ folder
 framework definitions and a mappings file, then prints the control's details
 followed by every related control in other frameworks.
 
-HOW TO USE IT (three modes)
----------------------------
+HOW TO USE IT (four modes)
+--------------------------
 MODE A - Look up one control and see all its cross-framework mappings:
     python src/crosswalk.py "ISO 27001 A.5.1"
     python src/crosswalk.py "A.5.1"          (framework prefix is optional)
@@ -21,6 +21,13 @@ MODE B - Search every framework by keyword (name + description):
 
 MODE C - List every control in one framework:
     python src/crosswalk.py --framework "NIST CSF 2.0"
+
+MODE D - Show the audit-readiness package for a control (evidence, testing
+         procedure, pass/fail criteria, sample finding, colour-coded risk
+         rating, and remediation):
+    python src/crosswalk.py --audit "A.5.1"
+    python src/crosswalk.py --audit          (no ID -> list controls that have
+                                              an audit package)
 
 For full help:
     python src/crosswalk.py --help
@@ -83,6 +90,7 @@ FRAMEWORK_FILES = [
     "eu-ai-act.yaml",
 ]
 MAPPINGS_FILE = "mappings.yaml"
+AUDIT_FILE = "audit-readiness.yaml"
 
 # Accepted alternative key names for framework files, so the tool works even if
 # your YAML uses slightly different field names. The first match wins.
@@ -103,6 +111,23 @@ MAPPING_ALIASES = {
     "map_id": ["id", "control_id", "ref"],
     "map_relationship": ["relationship", "type", "rel"],
     "map_notes": ["notes", "note", "comment"],
+}
+
+# Accepted alternative key names for the audit-readiness file. Same idea as the
+# blocks above: the first match wins, so the tool keeps working if your YAML
+# uses slightly different field names.
+AUDIT_ALIASES = {
+    "package_list": ["controls", "packages", "audit_packages", "items"],
+    "audit_framework": ["framework", "fw", "standard"],
+    "audit_id": ["id", "control_id", "ref"],
+    "audit_name": ["name", "title"],
+    "audit_evidence": ["evidence_requirements", "evidence", "evidence_required"],
+    "audit_testing": ["testing_procedure", "testing", "test_procedure", "procedure"],
+    "audit_pass": ["pass_criteria", "pass", "passing_criteria"],
+    "audit_fail": ["fail_criteria", "fail", "failing_criteria"],
+    "audit_finding": ["sample_finding", "finding", "example_finding"],
+    "audit_risk": ["risk_rating", "risk", "rating"],
+    "audit_remediation": ["remediation", "remediation_recommendation", "recommendation", "fix"],
 }
 
 
@@ -127,6 +152,10 @@ class Palette:
             self.heading = Fore.MAGENTA
             self.dim = Style.DIM
             self.reset = Style.RESET_ALL
+            # Risk-rating colours: Low = green, Medium = yellow, High = red.
+            self.risk_low = Fore.GREEN
+            self.risk_medium = Fore.YELLOW
+            self.risk_high = Fore.RED
             self.enabled = True
         except ImportError:
             # colorama not installed -> no colours, but no crash either.
@@ -136,6 +165,9 @@ class Palette:
             self.heading = ""
             self.dim = ""
             self.reset = ""
+            self.risk_low = ""
+            self.risk_medium = ""
+            self.risk_high = ""
             self.enabled = False
 
 
@@ -172,6 +204,31 @@ def first_present_map(record, alias_key):
         if key in record and record[key] not in (None, ""):
             return record[key]
     return None
+
+
+def first_present_audit(record, alias_key):
+    """Same as first_present(), but for the audit-readiness alias table."""
+    if not isinstance(record, dict):
+        return None
+    for key in AUDIT_ALIASES[alias_key]:
+        if key in record and record[key] not in (None, ""):
+            return record[key]
+    return None
+
+
+def as_text_list(value):
+    """Coerce a YAML field into a clean list of strings.
+
+    A list comes back as a list; a single string becomes a one-item list;
+    None becomes an empty list. Empty entries are dropped. This keeps the
+    numbered-list display robust even if a file uses a single string instead
+    of a list for, say, the testing procedure.
+    """
+    if value is None:
+        return []
+    if isinstance(value, list):
+        return [str(item) for item in value if item not in (None, "")]
+    return [str(value)]
 
 
 def normalize(value):
@@ -346,6 +403,58 @@ def _parse_targets(raw_entry):
     return targets
 
 
+def load_audit_packages(data_dir):
+    """Load audit-readiness.yaml into a normalised list of audit packages.
+
+    The file uses the same friendly shape as the framework files: a top-level
+    'controls:' list (a bare list, or a 'packages:'/'audit_packages:' key, also
+    works). Each entry is normalised to:
+
+        {
+          "framework", "id", "name",
+          "evidence":   [ ... ],   # evidence requirements, as a list
+          "testing":    [ ... ],   # testing procedure, as a list
+          "pass_criteria", "fail_criteria", "sample_finding",
+          "risk_rating", "remediation",
+        }
+
+    Uses yaml.safe_load (via load_yaml_file). Returns [] if the file is missing
+    so the rest of the tool keeps working without an audit file present.
+    """
+    raw = load_yaml_file(data_dir / AUDIT_FILE)
+    if raw is None:
+        return []
+
+    # The file may be a bare list, or a dict holding the package list.
+    if isinstance(raw, dict):
+        raw_entries = first_present_audit(raw, "package_list") or []
+    elif isinstance(raw, list):
+        raw_entries = raw
+    else:
+        raw_entries = []
+
+    packages = []
+    for entry in raw_entries:
+        if not isinstance(entry, dict):
+            continue
+        control_id = first_present_audit(entry, "audit_id")
+        if control_id is None:
+            continue  # an audit package without an ID can't be looked up
+        packages.append({
+            "framework": first_present_audit(entry, "audit_framework") or "",
+            "id": control_id,
+            "name": first_present_audit(entry, "audit_name") or "",
+            "evidence": as_text_list(first_present_audit(entry, "audit_evidence")),
+            "testing": as_text_list(first_present_audit(entry, "audit_testing")),
+            "pass_criteria": first_present_audit(entry, "audit_pass") or "",
+            "fail_criteria": first_present_audit(entry, "audit_fail") or "",
+            "sample_finding": first_present_audit(entry, "audit_finding") or "",
+            "risk_rating": first_present_audit(entry, "audit_risk") or "",
+            "remediation": first_present_audit(entry, "audit_remediation") or "",
+        })
+    return packages
+
+
 # ---------------------------------------------------------------------------
 # Lookup logic
 # ---------------------------------------------------------------------------
@@ -472,6 +581,20 @@ def search_keyword(keyword, frameworks):
     return hits
 
 
+def find_audit_package(control_id, packages):
+    """Find an audit package by control ID (framework name not required).
+
+    Matching is on the ID only and is case/space-insensitive, so a bare
+    "A.5.1" works just like in the other modes. Returns the package dict,
+    or None if no package exists for that control yet.
+    """
+    target = normalize(control_id)
+    for package in packages:
+        if normalize(package["id"]) == target:
+            return package
+    return None
+
+
 # ---------------------------------------------------------------------------
 # Display
 # ---------------------------------------------------------------------------
@@ -556,6 +679,76 @@ def display_framework_dump(framework, palette):
     print(f"\n  {len(framework['controls'])} control(s) total.")
 
 
+def risk_colour(rating, palette):
+    """Pick the colour for a risk rating: Low=green, Medium=yellow, High=red.
+
+    Falls back to no colour for anything unrecognised (and, as everywhere else,
+    every colour is an empty string when colorama is not installed).
+    """
+    table = {
+        "LOW": palette.risk_low,
+        "MEDIUM": palette.risk_medium,
+        "HIGH": palette.risk_high,
+    }
+    return table.get(normalize(rating), "")
+
+
+def display_audit_package(package, palette):
+    """Print a full audit-readiness package for one control."""
+    print_header("Audit-readiness package", palette)
+    print(f"  Framework:   {colorize(package['framework'] or '(unspecified)', palette.framework, palette)}")
+    print(f"  Control ID:  {colorize(package['id'], palette.control, palette)}")
+    print(f"  Name:        {package['name']}")
+
+    print_header("Evidence requirements", palette)
+    if package["evidence"]:
+        for number, item in enumerate(package["evidence"], start=1):
+            print(f"  {number}. {item}")
+    else:
+        print("  None listed.")
+
+    print_header("Testing procedure", palette)
+    if package["testing"]:
+        for number, item in enumerate(package["testing"], start=1):
+            print(f"  {number}. {item}")
+    else:
+        print("  None listed.")
+
+    print_header("Pass / fail criteria", palette)
+    # Green PASS / red FAIL labels reuse the existing palette and read clearly.
+    print(f"  {colorize('PASS:', palette.relationship, palette)} {package['pass_criteria'] or '(none given)'}")
+    print(f"  {colorize('FAIL:', palette.risk_high, palette)} {package['fail_criteria'] or '(none given)'}")
+
+    print_header("Sample finding", palette)
+    print(f"  {package['sample_finding'] or '(none given)'}")
+
+    print_header("Risk rating", palette)
+    rating = package["risk_rating"] or "(unspecified)"
+    print(f"  {colorize(rating, risk_colour(package['risk_rating'], palette), palette)}")
+
+    print_header("Remediation recommendation", palette)
+    print(f"  {package['remediation'] or '(none given)'}")
+
+
+def display_audit_index(packages, palette):
+    """List every control that currently HAS an audit package (ID + name + risk)."""
+    print_header("Controls with an audit package", palette)
+    if not packages:
+        print("  No audit packages are available yet.")
+        return
+    for package in packages:
+        framework = colorize(package["framework"] or "(unspecified)", palette.framework, palette)
+        control_id = colorize(package["id"], palette.control, palette)
+        if package["risk_rating"]:
+            rating = colorize(package["risk_rating"], risk_colour(package["risk_rating"], palette), palette)
+            suffix = f"  [{rating}]"
+        else:
+            suffix = ""
+        print(f"  - {framework}  {control_id}  {package['name']}{suffix}")
+    print(f"\n  {len(packages)} control(s) with an audit package.")
+    print("  Run e.g.  python src/crosswalk.py --audit \"A.5.1\"  to see one in full.")
+
+
 # ---------------------------------------------------------------------------
 # Mode handlers
 # ---------------------------------------------------------------------------
@@ -604,6 +797,32 @@ def run_framework_dump(name, frameworks, palette):
     return 0
 
 
+def run_audit(query, packages, palette):
+    """MODE D: show an audit-readiness package, or list the available ones.
+
+    `query` is "" (or blank) when --audit was given with no control ID, in
+    which case we list every control that has a package. Otherwise we look up
+    the package by ID, just like Mode A, and fall back to a polite message.
+    """
+    # --audit with no control ID -> list everything that has a package.
+    if not query or not query.strip():
+        display_audit_index(packages, palette)
+        return 0
+
+    _framework_hint, control_id = split_query(query)
+    package = find_audit_package(control_id, packages)
+    if package is None:
+        shown_id = colorize(control_id, palette.control, palette)
+        print(f"\n  No audit package available for {shown_id} yet. "
+              f"Audit packages currently cover {len(packages)} controls.")
+        print("  Run --audit with no control ID to list the controls that do have one:")
+        print("      python src/crosswalk.py --audit")
+        return 1
+
+    display_audit_package(package, palette)
+    return 0
+
+
 # ---------------------------------------------------------------------------
 # Command-line plumbing
 # ---------------------------------------------------------------------------
@@ -621,7 +840,14 @@ def build_parser():
             "MODE B  Keyword search across all frameworks (name + description):\n"
             '          python src/crosswalk.py --search "policy"\n\n'
             "MODE C  List all controls in one framework:\n"
-            '          python src/crosswalk.py --framework "NIST CSF 2.0"'
+            '          python src/crosswalk.py --framework "NIST CSF 2.0"\n\n'
+            "MODE D  Show the audit-readiness package for a control "
+            "(evidence,\n"
+            "        testing procedure, pass/fail criteria, sample finding,\n"
+            "        colour-coded risk rating, remediation):\n"
+            '          python src/crosswalk.py --audit "A.5.1"\n'
+            "          python src/crosswalk.py --audit   "
+            "(no ID -> list controls that have a package)"
         ),
     )
     parser.add_argument(
@@ -638,6 +864,16 @@ def build_parser():
         "--framework",
         metavar="NAME",
         help='List all controls in one framework, e.g. "NIST CSF 2.0" (Mode C).',
+    )
+    parser.add_argument(
+        "--audit",
+        nargs="?",
+        const="",       # --audit with no value -> "" (list available packages)
+        default=None,   # --audit absent          -> None (mode not selected)
+        metavar="CONTROL_ID",
+        help='Show the audit-readiness package for a control, e.g. "A.5.1" '
+             "(Mode D). Run with no control ID to list the controls that have "
+             "an audit package.",
     )
     parser.add_argument(
         "--data-dir",
@@ -665,11 +901,16 @@ def main(argv=None):
               file=sys.stderr)
         return 2
 
-    # Dispatch. Mode B and C don't need the mappings file; Mode A does.
+    # Dispatch. Modes B, C and D don't need the mappings file; Mode A does.
     if args.search:
         return run_search(args.search, frameworks, palette)
     if args.framework:
         return run_framework_dump(args.framework, frameworks, palette)
+    if args.audit is not None:
+        # Note: "" is a valid value (the "list available packages" sub-mode),
+        # so we test against None, not truthiness.
+        packages = load_audit_packages(data_dir)
+        return run_audit(args.audit, packages, palette)
     if args.control:
         mappings = load_mappings(data_dir)
         return run_lookup(args.control, frameworks, mappings, palette)
