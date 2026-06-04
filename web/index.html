@@ -328,6 +328,69 @@
     footer a { color: var(--accent); text-decoration: none; font-weight: 600; }
     footer a:hover { text-decoration: underline; }
 
+    /* ----------  Audit Readiness (added)  ---------- */
+    /* Risk pills reuse the existing palette: low = green, medium = orange,
+       high = red (aligned with the .error red used elsewhere). */
+    .pill.risk-low    { background: var(--pill-direct-bg);  color: var(--pill-direct-fg); }
+    .pill.risk-medium { background: var(--pill-partial-bg); color: var(--pill-partial-fg); }
+    .pill.risk-high   { background: #FBE3E0;                color: #B0271B; }
+
+    .audit-note {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--accent);
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      margin: 0 0 18px;
+      color: var(--muted);
+      font-size: .88rem;
+    }
+
+    .audit-list { margin: 4px 0 0; padding-left: 22px; color: var(--text); }
+    .audit-list li { margin: 4px 0; }
+
+    .criteria-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 4px;
+    }
+    .criteria-box {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 14px;
+    }
+    .criteria-box.pass { border-left: 4px solid var(--pill-direct-fg); }
+    .criteria-box.fail { border-left: 4px solid #B0271B; }
+    .criteria-box .cb-label {
+      font-size: .72rem; font-weight: 700; letter-spacing: .4px;
+      text-transform: uppercase; margin-bottom: 4px;
+    }
+    .criteria-box.pass .cb-label { color: var(--pill-direct-fg); }
+    .criteria-box.fail .cb-label { color: #B0271B; }
+    .criteria-box .cb-text { font-size: .92rem; color: var(--text); }
+
+    .finding-box {
+      background: var(--accent-soft);
+      border-radius: 8px;
+      padding: 12px 14px;
+      margin-top: 4px;
+      color: var(--text);
+      font-size: .92rem;
+    }
+    .remediation-box {
+      background: #F1F5FB;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      margin-top: 4px;
+      color: var(--text);
+      font-size: .92rem;
+    }
+    @media (max-width: 600px) {
+      .criteria-grid { grid-template-columns: 1fr; }
+    }
+
     /* ----------  Responsive  ---------- */
     @media (max-width: 600px) {
       header { padding: 24px 18px 22px; }
@@ -371,6 +434,7 @@
       <button class="tab" role="tab" aria-selected="true"  data-tab="lookup">Direct Lookup</button>
       <button class="tab" role="tab" aria-selected="false" data-tab="keyword">Keyword Search</button>
       <button class="tab" role="tab" aria-selected="false" data-tab="browse">Framework Browser</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="audit">Audit Readiness</button>
     </div>
 
     <!-- ----- MODE A: Direct lookup ----- -->
@@ -417,6 +481,27 @@
       </div>
       <div class="results" id="browse-results"></div>
     </section>
+
+    <!-- ----- MODE D: Audit readiness ----- -->
+    <section class="panel" id="panel-audit" role="tabpanel">
+      <p class="mode-intro">
+        Select a control to view its full audit-readiness package — evidence requirements,
+        testing procedure, pass / fail criteria, a sample finding, a risk rating, and a
+        remediation recommendation.
+      </p>
+      <p class="audit-note">
+        Audit packages are practitioner-reviewed starting points; confirm against
+        organizational context before use in a live audit.
+      </p>
+      <div class="search-row">
+        <select id="audit-select" aria-label="Select a control with an audit package" disabled>
+          <option value="">Loading audit packages…</option>
+        </select>
+      </div>
+      <div class="results" id="audit-results">
+        <div class="empty">Audit packages are loading…</div>
+      </div>
+    </section>
   </main>
 
   <!-- ==========  Footer  ========== -->
@@ -451,6 +536,7 @@
     { key: "EU_AI_ACT",   label: "EU AI Act",           url: RAW_BASE + "/eu-ai-act.yaml"  },
   ];
   const MAPPINGS_URL = RAW_BASE + "/mappings.yaml";
+  const AUDIT_URL    = RAW_BASE + "/audit-readiness.yaml";   // added: audit-readiness feature
 
   /* ----------------------------------------------------------------
      2. NORMALIZATION HELPERS
@@ -912,6 +998,112 @@
   }
 
   /* ----------------------------------------------------------------
+     9b. AUDIT READINESS (added)
+     Self-contained and loaded independently of the main framework data,
+     so a failure here never affects the three existing tabs.
+     ---------------------------------------------------------------- */
+  let AUDIT_CONTROLS = [];   // raw control objects from audit-readiness.yaml
+
+  // Map a risk rating string to its pill CSS class.
+  function riskPillClass(rating) {
+    const r = String(rating || "").toLowerCase();
+    if (r === "low")    return "risk-low";
+    if (r === "medium") return "risk-medium";
+    if (r === "high")   return "risk-high";
+    return "unknown";
+  }
+
+  // Build a styled audit-package card for one control.
+  function renderAuditCard(c) {
+    const list = arr => (Array.isArray(arr) ? arr : [])
+      .map(x => '<li>' + escapeHtml(x) + '</li>').join("");
+    const rating = c.risk_rating || "";
+    return '' +
+      '<div class="card">' +
+        '<div class="fw-name">' + escapeHtml(c.framework) + '</div>' +
+        '<h3 class="ctrl-title"><span class="cid">' + escapeHtml(c.id) + '</span>' +
+          escapeHtml(c.name) + '</h3>' +
+
+        '<div class="map-section"><h4>Evidence Requirements</h4>' +
+          '<ol class="audit-list">' + list(c.evidence_requirements) + '</ol></div>' +
+
+        '<div class="map-section"><h4>Testing Procedure</h4>' +
+          '<ol class="audit-list">' + list(c.testing_procedure) + '</ol></div>' +
+
+        '<div class="map-section"><h4>Pass / Fail Criteria</h4>' +
+          '<div class="criteria-grid">' +
+            '<div class="criteria-box pass">' +
+              '<div class="cb-label">Pass</div>' +
+              '<div class="cb-text">' + escapeHtml(c.pass_criteria) + '</div></div>' +
+            '<div class="criteria-box fail">' +
+              '<div class="cb-label">Fail</div>' +
+              '<div class="cb-text">' + escapeHtml(c.fail_criteria) + '</div></div>' +
+          '</div></div>' +
+
+        '<div class="map-section"><h4>Sample Finding</h4>' +
+          '<div class="finding-box">' + escapeHtml(c.sample_finding) + '</div></div>' +
+
+        '<div class="map-section"><h4>Risk Rating</h4>' +
+          '<span class="pill ' + riskPillClass(rating) + '">' +
+          escapeHtml(rating) + '</span></div>' +
+
+        '<div class="map-section"><h4>Remediation Recommendation</h4>' +
+          '<div class="remediation-box">' + escapeHtml(c.remediation) + '</div></div>' +
+      '</div>';
+  }
+
+  // Render the package for the currently selected control.
+  function runAudit() {
+    const sel = document.getElementById("audit-select");
+    const out = document.getElementById("audit-results");
+    const v = sel.value;
+    if (v === "" || v === null) {
+      out.innerHTML = '<div class="empty">Select a control above to view its audit package.</div>';
+      return;
+    }
+    const c = AUDIT_CONTROLS[parseInt(v, 10)];
+    if (!c) {
+      out.innerHTML = '<div class="hint">That audit package could not be found.</div>';
+      return;
+    }
+    out.innerHTML = renderAuditCard(c);
+  }
+
+  // Fetch the audit data, populate the dropdown, and wire its change handler.
+  async function loadAudit() {
+    const sel = document.getElementById("audit-select");
+    const out = document.getElementById("audit-results");
+    try {
+      const data = await fetchYaml(AUDIT_URL);
+      const controls = (data && Array.isArray(data.controls)) ? data.controls : [];
+      AUDIT_CONTROLS = controls;
+
+      sel.innerHTML =
+        '<option value="">— Select a control —</option>' +
+        controls.map((c, i) =>
+          '<option value="' + i + '">' +
+            escapeHtml(c.framework) + " — " + escapeHtml(c.id) + " — " + escapeHtml(c.name) +
+          '</option>'
+        ).join("");
+      sel.disabled = false;
+      sel.addEventListener("change", runAudit);
+
+      out.innerHTML =
+        '<div class="empty">Select a control above to view its audit package (' +
+        controls.length + ' available).</div>';
+    } catch (err) {
+      console.error(err);
+      out.innerHTML =
+        '<div class="error">' +
+          '<strong>Could not load audit-readiness data.</strong><br>' +
+          escapeHtml(err.message) + '<br><br>' +
+          'Data is fetched from <code>raw.githubusercontent.com</code>; ' +
+          'check your connection and try again.' +
+        '</div>';
+    }
+  }
+
+  /* ----------------------------------------------------------------
      10. BOOTSTRAP
      ---------------------------------------------------------------- */
   document.addEventListener("DOMContentLoaded", async () => {
@@ -931,6 +1123,10 @@
       console.error(err);
       showLoadError(err);
     }
+
+    // Audit-readiness data loads independently (added): its own try/catch lives
+    // inside loadAudit(), so it cannot block or break the three existing tabs.
+    loadAudit();
   });
   </script>
 </body>

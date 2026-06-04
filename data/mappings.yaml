@@ -443,8 +443,7 @@ mappings:
         notes: "Both support ongoing measurement and traceability of AI system behavior"
 
   - source:
-      framework: "NIST AI RMF 1.0"
-        
+      framework: "NIST AI RMF 1.0"    
       id: "MANAGE 4.1"
     targets:
       - framework: "ISO/IEC 42001:2023"
