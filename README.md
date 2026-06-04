@@ -29,6 +29,33 @@ Optional, for colored terminal output:
 ```bash
 pip install colorama
 ```
+## Audit Readiness
+
+Beyond mapping, the tool provides audit-readiness packages for key controls — the operational layer a GRC auditor needs to actually test a control.
+
+Each package includes:
+- **Evidence requirements** — what to collect to prove the control operates
+- **Testing procedure** — step-by-step how to test it
+- **Pass / fail criteria** — what a passing vs. failing result looks like
+- **Sample finding** — an example of a realistic audit finding
+- **Risk rating** — Low, Medium, or High
+- **Remediation recommendation** — how to close the gap
+
+### CLI usage
+
+```bash
+# View the audit package for a control
+python src/crosswalk.py --audit "A.5.1"
+
+# List all controls that have an audit package
+python src/crosswalk.py --audit
+```
+
+### Web interface
+
+The live tool includes an **Audit Readiness** tab — select a control to view its full audit package, with color-coded risk ratings.
+
+Audit content currently covers 15 high-priority controls across all five frameworks. The packages are practitioner-reviewed starting points; confirm against organizational context before use in a live audit.
 
 ### Three query modes
 
@@ -109,14 +136,14 @@ Cross-framework mappings
 
 ## Roadmap
 
-- [x] NIST CSF 2.0
-- [x] ISO/IEC 27001:2022
-- [x] NIST AI RMF 1.0
-- [x] ISO/IEC 42001:2023
-- [x] EU AI Act key articles
-- [x] Cross-framework mappings file (~40 cross-framework mappings)
-- [x] CLI lookup tool with 3 modes (lookup, search, framework dump)
-- [ ] Public web interface
+- [x] Cross-framework mappings file (~40 mappings)
+- [x] CLI lookup tool with 4 modes (lookup, search, framework dump, audit)
+- [x] Public web interface (live on GitHub Pages)
+- [x] Audit-readiness module (evidence, testing, pass/fail, findings, risk ratings, remediation) for 15 key controls
+- [ ] Risk register builder
+- [ ] Downloadable Excel audit workbook
+- [ ] Expand audit coverage to all mapped controls
+- [ ] Roadmap: live AI generation via API
 
 ## About
 
