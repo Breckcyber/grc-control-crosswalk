@@ -10,7 +10,7 @@ control maps across the other governance frameworks in the data/ folder
 framework definitions and a mappings file, then prints the control's details
 followed by every related control in other frameworks.
 
-HOW TO USE IT (four modes)
+HOW TO USE IT (five modes)
 --------------------------
 MODE A - Look up one control and see all its cross-framework mappings:
     python src/crosswalk.py "ISO 27001 A.5.1"
@@ -28,6 +28,13 @@ MODE D - Show the audit-readiness package for a control (evidence, testing
     python src/crosswalk.py --audit "A.5.1"
     python src/crosswalk.py --audit          (no ID -> list controls that have
                                               an audit package)
+
+MODE E - Look up the risk-register entries for a control (likelihood, impact,
+         colour-coded risk score and band, owner, target date, status, and
+         treatment), read from data/risk-register.yaml:
+    python src/crosswalk.py --risk "A.5.15"
+    python src/crosswalk.py --risk           (no ID -> list the whole register,
+                                              highest risk score first)
 
 For full help:
     python src/crosswalk.py --help
@@ -91,6 +98,7 @@ FRAMEWORK_FILES = [
 ]
 MAPPINGS_FILE = "mappings.yaml"
 AUDIT_FILE = "audit-readiness.yaml"
+RISK_FILE = "risk-register.yaml"
 
 # Accepted alternative key names for framework files, so the tool works even if
 # your YAML uses slightly different field names. The first match wins.
@@ -131,6 +139,28 @@ AUDIT_ALIASES = {
 }
 
 
+# Accepted alternative key names for the risk-register file. Same forgiving idea
+# as the blocks above: the first match wins. The related control is nested as a
+# {framework, id} object (like a mapping endpoint), so it reuses map_framework /
+# map_id via _parse_endpoint() rather than being re-aliased here.
+RISK_ALIASES = {
+    "risk_list": ["risks", "risk_register", "register", "items"],
+    "risk_id": ["risk_id", "id", "ref"],
+    "risk_control": ["related_control", "control", "related"],
+    "risk_description": ["risk_description", "description", "desc", "summary"],
+    "risk_likelihood": ["likelihood", "probability"],
+    "risk_likelihood_label": ["likelihood_label", "likelihood_text"],
+    "risk_impact": ["impact", "consequence"],
+    "risk_impact_label": ["impact_label", "impact_text"],
+    "risk_score": ["risk_score", "score"],
+    "risk_band": ["risk_band", "band", "risk_level", "level"],
+    "risk_owner": ["risk_owner", "owner"],
+    "risk_target_date": ["target_remediation_date", "target_date", "due_date", "due"],
+    "risk_status": ["remediation_status", "status"],
+    "risk_treatment": ["treatment", "remediation", "response"],
+}
+
+
 # ---------------------------------------------------------------------------
 # Colour handling (with graceful fallback if colorama is missing)
 # ---------------------------------------------------------------------------
@@ -152,10 +182,12 @@ class Palette:
             self.heading = Fore.MAGENTA
             self.dim = Style.DIM
             self.reset = Style.RESET_ALL
-            # Risk-rating colours: Low = green, Medium = yellow, High = red.
+            # Risk-rating colours: Low = green, Medium = yellow, High = red,
+            # Critical = bright magenta (a distinct "above High" alarm colour).
             self.risk_low = Fore.GREEN
             self.risk_medium = Fore.YELLOW
             self.risk_high = Fore.RED
+            self.risk_critical = Style.BRIGHT + Fore.MAGENTA
             self.enabled = True
         except ImportError:
             # colorama not installed -> no colours, but no crash either.
@@ -168,6 +200,7 @@ class Palette:
             self.risk_low = ""
             self.risk_medium = ""
             self.risk_high = ""
+            self.risk_critical = ""
             self.enabled = False
 
 
@@ -211,6 +244,20 @@ def first_present_audit(record, alias_key):
     if not isinstance(record, dict):
         return None
     for key in AUDIT_ALIASES[alias_key]:
+        if key in record and record[key] not in (None, ""):
+            return record[key]
+    return None
+
+
+def first_present_risk(record, alias_key):
+    """Same as first_present(), but for the risk-register alias table.
+
+    Note: 0 is a legitimate value for a numeric field, so this only treats
+    None and "" as "absent" (it does NOT discard a literal 0).
+    """
+    if not isinstance(record, dict):
+        return None
+    for key in RISK_ALIASES[alias_key]:
         if key in record and record[key] not in (None, ""):
             return record[key]
     return None
@@ -455,6 +502,65 @@ def load_audit_packages(data_dir):
     return packages
 
 
+def load_risk_register(data_dir):
+    """Load risk-register.yaml into a normalised list of risk entries.
+
+    Mirrors load_audit_packages(): the file may be a bare list, or a dict with a
+    'risks:' key (other aliases in RISK_ALIASES["risk_list"] also work). The
+    related control is a nested {framework, id} object, parsed with the same
+    _parse_endpoint() helper the mappings loader uses. Each entry is normalised:
+
+        {
+          "risk_id",
+          "control": {"framework", "id"},
+          "description",
+          "likelihood", "likelihood_label",
+          "impact", "impact_label",
+          "score", "band",
+          "owner", "target_date", "status", "treatment",
+        }
+
+    Uses yaml.safe_load (via load_yaml_file). Returns [] if the file is missing
+    so the other four modes keep working without a risk register present.
+    """
+    raw = load_yaml_file(data_dir / RISK_FILE)
+    if raw is None:
+        return []
+
+    # The file may be a bare list, or a dict holding the risk list.
+    if isinstance(raw, dict):
+        raw_entries = first_present_risk(raw, "risk_list") or []
+    elif isinstance(raw, list):
+        raw_entries = raw
+    else:
+        raw_entries = []
+
+    risks = []
+    for entry in raw_entries:
+        if not isinstance(entry, dict):
+            continue
+        risk_id = first_present_risk(entry, "risk_id")
+        if risk_id is None:
+            continue  # a risk without an ID can't be referenced
+        control = _parse_endpoint(first_present_risk(entry, "risk_control"))
+        risks.append({
+            "risk_id": risk_id,
+            "control": control,
+            "description": first_present_risk(entry, "risk_description") or "",
+            "likelihood": first_present_risk(entry, "risk_likelihood"),
+            "likelihood_label": first_present_risk(entry, "risk_likelihood_label") or "",
+            "impact": first_present_risk(entry, "risk_impact"),
+            "impact_label": first_present_risk(entry, "risk_impact_label") or "",
+            "score": first_present_risk(entry, "risk_score"),
+            "band": first_present_risk(entry, "risk_band") or "",
+            "owner": first_present_risk(entry, "risk_owner") or "",
+            "target_date": first_present_risk(entry, "risk_target_date") or "",
+            "status": first_present_risk(entry, "risk_status") or "",
+            "treatment": first_present_risk(entry, "risk_treatment") or "",
+        })
+    return risks
+
+
 # ---------------------------------------------------------------------------
 # Lookup logic
 # ---------------------------------------------------------------------------
@@ -595,6 +701,32 @@ def find_audit_package(control_id, packages):
     return None
 
 
+def find_risks_for_control(control_id, risks):
+    """Find every risk-register entry whose related control matches `control_id`.
+
+    Matching is on the control ID only (framework name not required) and is
+    case/space-insensitive, consistent with every other mode. A single control
+    can have more than one risk, so this returns a LIST (possibly empty).
+    """
+    target = normalize(control_id)
+    return [risk for risk in risks if normalize(risk["control"]["id"]) == target]
+
+
+def risk_sort_key(risk):
+    """Sort key for the full register: highest score first, then risk ID.
+
+    The score may be missing or non-numeric in a hand-edited file, so it is
+    coerced defensively (treated as -1 if it can't be read as a number) to keep
+    sorting robust. The negative score gives descending order; the risk ID is a
+    stable tie-break so equal-score rows always appear in the same sequence.
+    """
+    try:
+        score = float(risk["score"])
+    except (TypeError, ValueError):
+        score = -1
+    return (-score, normalize(risk["risk_id"]))
+
+
 # ---------------------------------------------------------------------------
 # Display
 # ---------------------------------------------------------------------------
@@ -680,15 +812,19 @@ def display_framework_dump(framework, palette):
 
 
 def risk_colour(rating, palette):
-    """Pick the colour for a risk rating: Low=green, Medium=yellow, High=red.
+    """Pick the colour for a risk rating/band.
 
-    Falls back to no colour for anything unrecognised (and, as everywhere else,
-    every colour is an empty string when colorama is not installed).
+    Low=green, Medium=yellow, High=red, Critical=bright magenta. Falls back to
+    no colour for anything unrecognised (and, as everywhere else, every colour
+    is an empty string when colorama is not installed). The CRITICAL entry is
+    additive: the audit-readiness data uses Low/Medium/High only, so Mode D's
+    output is unaffected, while the risk register (Mode E) can also be Critical.
     """
     table = {
         "LOW": palette.risk_low,
         "MEDIUM": palette.risk_medium,
         "HIGH": palette.risk_high,
+        "CRITICAL": palette.risk_critical,
     }
     return table.get(normalize(rating), "")
 
@@ -747,6 +883,71 @@ def display_audit_index(packages, palette):
         print(f"  - {framework}  {control_id}  {package['name']}{suffix}")
     print(f"\n  {len(packages)} control(s) with an audit package.")
     print("  Run e.g.  python src/crosswalk.py --audit \"A.5.1\"  to see one in full.")
+
+
+def _format_score_band(risk, palette):
+    """Return a single colour-coded 'score (Band)' fragment for a risk.
+
+    The colour follows the band via the shared risk_colour() helper, so Low is
+    green, Medium yellow, High red and Critical bright magenta. Missing values
+    degrade gracefully to placeholders rather than raising.
+    """
+    score = risk["score"] if risk["score"] not in (None, "") else "?"
+    band = risk["band"] or "(unspecified)"
+    coloured_band = colorize(band, risk_colour(risk["band"], palette), palette)
+    return f"{score} ({coloured_band})"
+
+
+def display_risk_entry(risk, palette):
+    """Print one full risk-register entry."""
+    print_header(f"Risk {risk['risk_id']}", palette)
+
+    framework = colorize(risk["control"]["framework"] or "(unspecified framework)",
+                         palette.framework, palette)
+    control_id = colorize(risk["control"]["id"] or "(none)", palette.control, palette)
+    print(f"  Related control:  {framework}  {control_id}")
+
+    if risk["description"]:
+        print(f"  Description:      {risk['description']}")
+
+    # Likelihood / impact, each shown as "number (Label)" when both are present.
+    likelihood = risk["likelihood"] if risk["likelihood"] not in (None, "") else "?"
+    impact = risk["impact"] if risk["impact"] not in (None, "") else "?"
+    like_label = f" ({risk['likelihood_label']})" if risk["likelihood_label"] else ""
+    impact_label = f" ({risk['impact_label']})" if risk["impact_label"] else ""
+    print(f"  Likelihood:       {likelihood}{like_label}")
+    print(f"  Impact:           {impact}{impact_label}")
+
+    print(f"  Risk score/band:  {_format_score_band(risk, palette)}")
+    print(f"  Risk owner:       {risk['owner'] or '(unassigned)'}")
+    print(f"  Target date:      {risk['target_date'] or '(none set)'}")
+    print(f"  Status:           {risk['status'] or '(unspecified)'}")
+    print(f"  Treatment:        {risk['treatment'] or '(none given)'}")
+
+
+def display_risk_register(risks, palette):
+    """List the whole register: ID, related control, band, status.
+
+    Sorted highest risk score first (risk_sort_key) so the most urgent entries
+    sit at the top.
+    """
+    print_header("Risk register", palette)
+    if not risks:
+        print("  The risk register is empty.")
+        return
+
+    for risk in sorted(risks, key=risk_sort_key):
+        risk_id = colorize(risk["risk_id"], palette.control, palette)
+        framework = colorize(risk["control"]["framework"] or "(unspecified)",
+                             palette.framework, palette)
+        control_id = colorize(risk["control"]["id"] or "(none)", palette.control, palette)
+        score_band = _format_score_band(risk, palette)
+        status = risk["status"] or "(unspecified)"
+        print(f"  - {risk_id}  {framework} {control_id}  "
+              f"score {score_band}  [{status}]")
+
+    print(f"\n  {len(risks)} risk(s) total, highest score first.")
+    print("  Run e.g.  python src/crosswalk.py --risk \"A.5.15\"  to see one in full.")
 
 
 # ---------------------------------------------------------------------------
@@ -823,6 +1024,35 @@ def run_audit(query, packages, palette):
     return 0
 
 
+def run_risk(query, risks, palette):
+    """MODE E: show the risk-register entries for a control, or list the register.
+
+    `query` is "" (or blank) when --risk was given with no control ID, in which
+    case we list the entire register sorted highest-score-first. Otherwise we
+    look up by related-control ID (a control may have several risks) and fall
+    back to a polite message that points at the no-argument listing.
+    """
+    # --risk with no control ID -> list the whole register, highest score first.
+    if not query or not query.strip():
+        display_risk_register(risks, palette)
+        return 0
+
+    _framework_hint, control_id = split_query(query)
+    matches = find_risks_for_control(control_id, risks)
+    if not matches:
+        shown_id = colorize(control_id, palette.control, palette)
+        print(f"\n  No risk-register entry is linked to {shown_id} yet. "
+              f"The register currently holds {len(risks)} risk(s).")
+        print("  Run --risk with no control ID to see the full register:")
+        print("      python src/crosswalk.py --risk")
+        return 1
+
+    # Show matches highest-score-first too, for consistency with the listing.
+    for risk in sorted(matches, key=risk_sort_key):
+        display_risk_entry(risk, palette)
+    return 0
+
+
 # ---------------------------------------------------------------------------
 # Command-line plumbing
 # ---------------------------------------------------------------------------
@@ -847,7 +1077,13 @@ def build_parser():
             "        colour-coded risk rating, remediation):\n"
             '          python src/crosswalk.py --audit "A.5.1"\n'
             "          python src/crosswalk.py --audit   "
-            "(no ID -> list controls that have a package)"
+            "(no ID -> list controls that have a package)\n\n"
+            "MODE E  Show the risk-register entries for a control (likelihood,\n"
+            "        impact, colour-coded risk score and band, owner, target\n"
+            "        date, status, treatment):\n"
+            '          python src/crosswalk.py --risk "A.5.15"\n'
+            "          python src/crosswalk.py --risk   "
+            "(no ID -> list the whole register, highest score first)"
         ),
     )
     parser.add_argument(
@@ -874,6 +1110,16 @@ def build_parser():
         help='Show the audit-readiness package for a control, e.g. "A.5.1" '
              "(Mode D). Run with no control ID to list the controls that have "
              "an audit package.",
+    )
+    parser.add_argument(
+        "--risk",
+        nargs="?",
+        const="",       # --risk with no value -> "" (list the whole register)
+        default=None,   # --risk absent         -> None (mode not selected)
+        metavar="CONTROL_ID",
+        help='Show the risk-register entries for a control, e.g. "A.5.15" '
+             "(Mode E). Run with no control ID to list the whole register, "
+             "highest risk score first.",
     )
     parser.add_argument(
         "--data-dir",
@@ -911,6 +1157,11 @@ def main(argv=None):
         # so we test against None, not truthiness.
         packages = load_audit_packages(data_dir)
         return run_audit(args.audit, packages, palette)
+    if args.risk is not None:
+        # Same pattern as --audit: "" is the valid "list the whole register"
+        # sub-mode, so we test against None rather than truthiness.
+        risks = load_risk_register(data_dir)
+        return run_risk(args.risk, risks, palette)
     if args.control:
         mappings = load_mappings(data_dir)
         return run_lookup(args.control, frameworks, mappings, palette)
