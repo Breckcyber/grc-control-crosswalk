@@ -1,0 +1,265 @@
+risk_register_version: "1.1"
+last_updated: "2026-06-02"
+methodology: "Sample risk register entries derived from control-gap audit findings. Likelihood and impact each scored 1-5; risk score = likelihood x impact (1-25); mapped to a risk band (Low/Medium/High/Critical). Entries are illustrative templates — organizations populate with their actual risks, owners, and dates."
+
+risk_matrix:
+  type: "5x5"
+  likelihood_scale:
+    1: "Rare"
+    2: "Unlikely"
+    3: "Possible"
+    4: "Likely"
+    5: "Almost Certain"
+  impact_scale:
+    1: "Insignificant"
+    2: "Minor"
+    3: "Moderate"
+    4: "Major"
+    5: "Severe"
+  scoring: "Risk score = likelihood x impact"
+  bands:
+    - "1-4 = Low"
+    - "5-9 = Medium"
+    - "10-14 = High"
+    - "15-25 = Critical"
+
+risks:
+  - risk_id: "R-001"
+    related_control:
+      framework: "ISO 27001:2022"
+      id: "A.5.1"
+    risk_description: "Information security policy is not reviewed on a defined cycle, increasing the chance that policy becomes outdated and misaligned with current threats and obligations."
+    likelihood: 3
+    likelihood_label: "Possible"
+    impact: 3
+    impact_label: "Moderate"
+    risk_score: 9
+    risk_band: "Medium"
+    risk_owner: "Chief Information Security Officer (CISO)"
+    target_remediation_date: "2026-09-30"
+    remediation_status: "Open"
+    treatment: "Establish a documented annual policy review cadence with assigned owner and management sign-off."
+
+  - risk_id: "R-002"
+    related_control:
+      framework: "ISO 27001:2022"
+      id: "A.5.15"
+    risk_description: "Access control rules are not consistently defined and enforced across systems, allowing users to obtain or retain access beyond their role, which raises the likelihood of unauthorized access to sensitive information."
+    likelihood: 4
+    likelihood_label: "Likely"
+    impact: 5
+    impact_label: "Severe"
+    risk_score: 20
+    risk_band: "Critical"
+    risk_owner: "IT Security Manager"
+    target_remediation_date: "2026-09-15"
+    remediation_status: "In Progress"
+    treatment: "Define a formal access control policy aligned to least privilege, implement role-based access controls, and enforce periodic access recertification."
+
+  - risk_id: "R-003"
+    related_control:
+      framework: "ISO 27001:2022"
+      id: "A.5.19"
+    risk_description: "Information security requirements are not consistently incorporated into supplier agreements and onboarding, leaving third-party access and data handling inadequately controlled."
+    likelihood: 3
+    likelihood_label: "Possible"
+    impact: 4
+    impact_label: "Major"
+    risk_score: 12
+    risk_band: "High"
+    risk_owner: "Vendor Risk Manager"
+    target_remediation_date: "2026-10-31"
+    remediation_status: "Open"
+    treatment: "Embed security and data-protection clauses in supplier contracts and require security assessments during vendor onboarding and renewal."
+
+  - risk_id: "R-004"
+    related_control:
+      framework: "ISO 27001:2022"
+      id: "A.5.24"
+    risk_description: "An incident response plan is not formally documented, assigned, or tested, which may delay containment and increase the impact of a security incident."
+    likelihood: 3
+    likelihood_label: "Possible"
+    impact: 4
+    impact_label: "Major"
+    risk_score: 12
+    risk_band: "High"
+    risk_owner: "Security Operations Manager"
+    target_remediation_date: "2026-09-30"
+    remediation_status: "In Progress"
+    treatment: "Document an incident response plan with defined roles, escalation paths, and communication procedures, and validate it through periodic tabletop exercises."
+
+  - risk_id: "R-005"
+    related_control:
+      framework: "ISO 27001:2022"
+      id: "A.6.3"
+    risk_description: "Security awareness training has been delivered but is not yet on a recurring, role-based schedule, leaving residual exposure to social-engineering and human-error events."
+    likelihood: 2
+    likelihood_label: "Unlikely"
+    impact: 2
+    impact_label: "Minor"
+    risk_score: 4
+    risk_band: "Low"
+    risk_owner: "Information Security Manager"
+    target_remediation_date: "2026-09-30"
+    remediation_status: "Mitigated"
+    treatment: "Maintain a recurring annual awareness program with role-specific modules and track completion rates against a defined target."
+
+  - risk_id: "R-006"
+    related_control:
+      framework: "ISO 27001:2022"
+      id: "A.8.15"
+    risk_description: "Event logging is not consistently enabled, standardized, or retained across in-scope systems, limiting the organization's ability to detect, investigate, and reconstruct security events."
+    likelihood: 4
+    likelihood_label: "Likely"
+    impact: 3
+    impact_label: "Moderate"
+    risk_score: 12
+    risk_band: "High"
+    risk_owner: "IT Operations Manager"
+    target_remediation_date: "2026-10-15"
+    remediation_status: "In Progress"
+    treatment: "Define logging requirements and retention periods, enable logging on critical systems, and centralize logs in a protected repository."
+
+  - risk_id: "R-007"
+    related_control:
+      framework: "ISO 27001:2022"
+      id: "A.8.16"
+    risk_description: "Systems and networks are not monitored against a defined baseline for anomalous behavior, so malicious or unexpected activity may go undetected."
+    likelihood: 2
+    likelihood_label: "Unlikely"
+    impact: 5
+    impact_label: "Severe"
+    risk_score: 10
+    risk_band: "High"
+    risk_owner: "Security Operations Manager"
+    target_remediation_date: "2026-11-15"
+    remediation_status: "Open"
+    treatment: "Establish monitoring use cases and alerting thresholds, and assign responsibility for triaging and escalating anomalies."
+
+  - risk_id: "R-008"
+    related_control:
+      framework: "NIST CSF 2.0"
+      id: "GV.PO-01"
+    risk_description: "An organizational cybersecurity policy has been established and communicated, but enforcement and periodic review are still being formalized."
+    likelihood: 2
+    likelihood_label: "Unlikely"
+    impact: 3
+    impact_label: "Moderate"
+    risk_score: 6
+    risk_band: "Medium"
+    risk_owner: "Chief Information Security Officer (CISO)"
+    target_remediation_date: "2026-09-30"
+    remediation_status: "Mitigated"
+    treatment: "Finalize the policy governance process, confirm management endorsement, and schedule periodic review and re-communication."
+
+  - risk_id: "R-009"
+    related_control:
+      framework: "NIST CSF 2.0"
+      id: "ID.RA-01"
+    risk_description: "Vulnerabilities in assets are not identified through regular, comprehensive scanning, leaving exploitable weaknesses unknown and unremediated."
+    likelihood: 4
+    likelihood_label: "Likely"
+    impact: 4
+    impact_label: "Major"
+    risk_score: 16
+    risk_band: "Critical"
+    risk_owner: "Vulnerability Management Lead"
+    target_remediation_date: "2026-09-15"
+    remediation_status: "In Progress"
+    treatment: "Implement scheduled vulnerability scanning across assets, prioritize findings by risk, and track remediation through to closure."
+
+  - risk_id: "R-010"
+    related_control:
+      framework: "NIST CSF 2.0"
+      id: "PR.AA-05"
+    risk_description: "Access permissions and authorizations are not managed according to least privilege and separation of duties, allowing privilege accumulation over time."
+    likelihood: 3
+    likelihood_label: "Possible"
+    impact: 4
+    impact_label: "Major"
+    risk_score: 12
+    risk_band: "High"
+    risk_owner: "Identity and Access Management Lead"
+    target_remediation_date: "2026-10-31"
+    remediation_status: "In Progress"
+    treatment: "Implement least-privilege provisioning, enforce separation of duties, and conduct regular access reviews with documented approvals."
+
+  - risk_id: "R-011"
+    related_control:
+      framework: "NIST CSF 2.0"
+      id: "DE.CM-01"
+    risk_description: "Networks are not continuously monitored to detect potential cybersecurity events, reducing the likelihood of timely detection of intrusions or lateral movement."
+    likelihood: 4
+    likelihood_label: "Likely"
+    impact: 3
+    impact_label: "Moderate"
+    risk_score: 12
+    risk_band: "High"
+    risk_owner: "Security Operations Center (SOC) Manager"
+    target_remediation_date: "2026-11-30"
+    remediation_status: "Open"
+    treatment: "Deploy network monitoring with defined detection rules, integrate alerts into the monitoring workflow, and review coverage periodically."
+
+  - risk_id: "R-012"
+    related_control:
+      framework: "ISO/IEC 42001:2023"
+      id: "A.5.2"
+    risk_description: "AI system impact assessments are not consistently performed before deployment, so potential impacts on individuals, groups, and society may be unidentified and unmitigated."
+    likelihood: 3
+    likelihood_label: "Possible"
+    impact: 4
+    impact_label: "Major"
+    risk_score: 12
+    risk_band: "High"
+    risk_owner: "AI Governance Lead"
+    target_remediation_date: "2026-12-15"
+    remediation_status: "Open"
+    treatment: "Adopt a documented AI impact assessment process triggered at design and before deployment, with sign-off from the AI governance function."
+
+  - risk_id: "R-013"
+    related_control:
+      framework: "ISO/IEC 42001:2023"
+      id: "A.9.2"
+    risk_description: "Human oversight mechanisms for AI systems are being defined but are not yet consistently applied, creating risk that automated outputs are relied upon without adequate review."
+    likelihood: 2
+    likelihood_label: "Unlikely"
+    impact: 4
+    impact_label: "Major"
+    risk_score: 8
+    risk_band: "Medium"
+    risk_owner: "AI Governance Lead"
+    target_remediation_date: "2026-12-31"
+    remediation_status: "In Progress"
+    treatment: "Define and assign human oversight roles for AI systems, specify intervention and override procedures, and document oversight in operating procedures."
+
+  - risk_id: "R-014"
+    related_control:
+      framework: "NIST AI RMF 1.0"
+      id: "MAP 1.1"
+    risk_description: "The context of AI system use — including purpose, stakeholders, assumptions, and constraints — is not fully documented, which can lead to risks being mischaracterized during mapping."
+    likelihood: 1
+    likelihood_label: "Rare"
+    impact: 3
+    impact_label: "Moderate"
+    risk_score: 3
+    risk_band: "Low"
+    risk_owner: "AI Governance Lead"
+    target_remediation_date: "2027-01-31"
+    remediation_status: "Open"
+    treatment: "Document AI system context for each use case, including intended purpose, stakeholders, and known limitations, and review at material changes."
+
+  - risk_id: "R-015"
+    related_control:
+      framework: "EU AI Act"
+      id: "Article 14"
+    risk_description: "High-risk AI systems are not yet demonstrably designed to enable effective human oversight as required by Article 14, creating regulatory non-compliance and the risk of unchecked automated decisions. Applicability and high-risk classification to be confirmed against organizational context."
+    likelihood: 3
+    likelihood_label: "Possible"
+    impact: 4
+    impact_label: "Major"
+    risk_score: 12
+    risk_band: "High"
+    risk_owner: "AI Governance Lead / Data Protection Officer (DPO)"
+    target_remediation_date: "2027-02-28"
+    remediation_status: "Open"
+    treatment: "Confirm which systems are high-risk under the EU AI Act, then implement and document human oversight measures (monitoring, interpretation, and intervention capabilities) for those systems."
