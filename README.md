@@ -80,6 +80,29 @@ python src/crosswalk.py --risk "A.5.15"
 # View the full register, sorted highest-risk-first
 python src/crosswalk.py --risk
 ```
+## Excel Audit Workbook
+
+The tool exports everything into a single professional Excel workbook — the deliverable a GRC team would actually hand to an auditor.
+
+**Download the sample workbook:** [GRC_Audit_Workbook.xlsx](GRC_Audit_Workbook.xlsx)
+
+The workbook has five sheets:
+- **Control Mapping** — cross-framework control mappings with relationship types
+- **Audit Evidence** — evidence requirements per control
+- **Control Testing** — testing procedures, pass/fail criteria, and sample findings
+- **Risk Register** — 5x5 scored risks with likelihood, impact, owner, and band
+- **Remediation Planning** — owners, target dates, status, and treatment
+
+Each sheet has formatted headers, color-coded risk bands, and shaded status cells.
+
+### Regenerate it yourself
+
+```bash
+pip install -r requirements.txt
+python src/export_excel.py
+```
+
+This reads the current YAML data and regenerates `GRC_Audit_Workbook.xlsx` at the repo root.
 
 ### Web interface
 
@@ -178,7 +201,7 @@ Cross-framework mappings
 - [x] Public web interface (live on GitHub Pages)
 - [x] Audit-readiness module (evidence, testing, pass/fail, findings, risk ratings, remediation) for 15 key controls
 - [x] Risk register builder (5x5 matrix, scored & prioritized entries)
-- [ ] Downloadable Excel audit workbook
+- [x] Downloadable Excel audit workbook (5 sheets: mapping, evidence, testing, risk register, remediation)
 - [ ] Expand audit coverage to all mapped controls
 - [ ] Roadmap: live AI generation via API
 
