@@ -1,7 +1,7 @@
 
 > # GRC Control Crosswalk Tool
 
-> Working open-source CLI that maps 340+ security and AI governance controls across five major frameworks — NIST CSF 2.0, ISO/IEC 27001:2022, ISO/IEC 42001:2023, NIST AI RMF 1.0, and the EU AI Act. One control in, cross-framework mappings out in seconds. Built with Anthropic Claude Code.
+> > An open-source GRC platform that maps 340+ controls across five major frameworks — NIST CSF 2.0, ISO/IEC 27001:2022, ISO/IEC 42001:2023, NIST AI RMF 1.0, and the EU AI Act — and takes you from cross-framework mapping to audit readiness, a 5x5 risk register, and a downloadable audit workbook. Available as a Python CLI and a live web tool. Built with Anthropic Claude Code.
 
 [![Built with Claude Code](https://img.shields.io/badge/Built%20with-Claude%20Code-orange)](https://anthropic.com/claude-code)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
