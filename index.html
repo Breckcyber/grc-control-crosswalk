@@ -391,6 +391,111 @@
       .criteria-grid { grid-template-columns: 1fr; }
     }
 
+    /* ----------  Risk Register (added)  ---------- */
+    /* Band pills reuse the existing palette where possible; Critical gets a
+       distinct deep-magenta so it never reads as "just a darker High". */
+    .pill.band-low      { background: var(--pill-direct-bg);  color: var(--pill-direct-fg); }
+    .pill.band-medium   { background: var(--pill-partial-bg); color: var(--pill-partial-fg); }
+    .pill.band-high     { background: #FBE3E0;                color: #B0271B; }
+    .pill.band-critical { background: #F3D7E6;                color: #9A1B5C; }
+
+    /* Status pills are deliberately subtle, drawn from the same palette. */
+    .pill.status-open        { background: #ECEFF3;                color: var(--muted); }
+    .pill.status-in-progress { background: var(--pill-related-bg); color: var(--pill-related-fg); }
+    .pill.status-mitigated   { background: var(--pill-direct-bg);  color: var(--pill-direct-fg); }
+
+    /* Clickable summary row — same card surface as the rest of the app, with a
+       band-colored left border for at-a-glance scanning. */
+    .risk-row {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--accent);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      transition: border-color .15s ease;
+    }
+    .risk-row.band-left-low      { border-left-color: var(--pill-direct-fg); }
+    .risk-row.band-left-medium   { border-left-color: var(--pill-partial-fg); }
+    .risk-row.band-left-high     { border-left-color: #B0271B; }
+    .risk-row.band-left-critical { border-left-color: #9A1B5C; }
+
+    .risk-row-head {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding: 13px 16px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .risk-row-head:hover { background: #FAFBFD; }
+    .risk-row-head:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--accent-soft);
+    }
+    .rr-id {
+      font-family: "Consolas", "SFMono-Regular", monospace;
+      font-weight: 700; color: var(--navy); font-size: .9rem;
+      flex: 0 0 64px;
+    }
+    .rr-ctrl { flex: 1 1 230px; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+    .rr-ctrl .rr-fw {
+      font-size: .68rem; font-weight: 700; letter-spacing: .4px;
+      text-transform: uppercase; color: var(--accent);
+    }
+    .rr-ctrl .rr-cid {
+      font-family: "Consolas", "SFMono-Regular", monospace;
+      font-weight: 700; color: var(--navy); font-size: .85rem;
+    }
+    .rr-score {
+      flex: 0 0 auto;
+      font-weight: 700; color: var(--navy); font-size: 1.05rem;
+      min-width: 26px; text-align: center;
+    }
+    .rr-score-cap {
+      font-size: .62rem; font-weight: 700; letter-spacing: .4px;
+      text-transform: uppercase; color: var(--muted);
+      display: block; text-align: center; margin-top: -3px;
+    }
+    .rr-chevron {
+      flex: 0 0 auto; margin-left: auto;
+      color: var(--muted); font-size: .9rem;
+      transition: transform .18s ease;
+    }
+    .risk-row.open .rr-chevron { transform: rotate(90deg); }
+
+    /* Expanded detail — hidden until the row is opened. */
+    .risk-detail {
+      display: none;
+      padding: 4px 18px 18px;
+      border-top: 1px solid var(--border);
+    }
+    .risk-row.open .risk-detail { display: block; animation: fade .2s ease; }
+
+    .risk-meta-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 4px;
+    }
+    .risk-meta-box {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 13px;
+    }
+    .risk-meta-box .rm-label {
+      font-size: .68rem; font-weight: 700; letter-spacing: .4px;
+      text-transform: uppercase; color: var(--muted); margin-bottom: 4px;
+    }
+    .risk-meta-box .rm-value { color: var(--text); font-size: .95rem; font-weight: 600; }
+    .risk-meta-box .rm-sub   { color: var(--muted); font-size: .82rem; font-weight: 400; }
+
+    @media (max-width: 600px) {
+      .risk-meta-grid { grid-template-columns: 1fr; }
+      .rr-id { flex-basis: auto; }
+    }
+
     /* ----------  Responsive  ---------- */
     @media (max-width: 600px) {
       header { padding: 24px 18px 22px; }
@@ -435,6 +540,7 @@
       <button class="tab" role="tab" aria-selected="false" data-tab="keyword">Keyword Search</button>
       <button class="tab" role="tab" aria-selected="false" data-tab="browse">Framework Browser</button>
       <button class="tab" role="tab" aria-selected="false" data-tab="audit">Audit Readiness</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="risk">Risk Register</button>
     </div>
 
     <!-- ----- MODE A: Direct lookup ----- -->
@@ -502,6 +608,23 @@
         <div class="empty">Audit packages are loading…</div>
       </div>
     </section>
+
+    <!-- ----- MODE E: Risk register ----- -->
+    <section class="panel" id="panel-risk" role="tabpanel">
+      <p class="mode-intro">
+        The full risk register, sorted by risk score (highest first). Click any
+        row to expand its full detail — description, likelihood and impact,
+        owner, target date, status, and treatment.
+      </p>
+      <p class="audit-note">
+        Sample risk register entries derived from audit findings; organizations
+        populate with their own risks, owners, and dates. Risk score =
+        likelihood × impact on a 5×5 matrix.
+      </p>
+      <div class="results" id="risk-results">
+        <div class="empty">Risk register is loading…</div>
+      </div>
+    </section>
   </main>
 
   <!-- ==========  Footer  ========== -->
@@ -537,6 +660,7 @@
   ];
   const MAPPINGS_URL = RAW_BASE + "/mappings.yaml";
   const AUDIT_URL    = RAW_BASE + "/audit-readiness.yaml";   // added: audit-readiness feature
+  const RISK_URL     = RAW_BASE + "/risk-register.yaml";     // added: risk-register feature
 
   /* ----------------------------------------------------------------
      2. NORMALIZATION HELPERS
@@ -1104,6 +1228,165 @@
   }
 
   /* ----------------------------------------------------------------
+     9c. RISK REGISTER (added)
+     Self-contained and loaded independently of the main framework data
+     (and of the audit feature), so a failure here never affects any
+     existing tab.
+     ---------------------------------------------------------------- */
+  let RISK_REGISTER = [];   // raw risk objects from risk-register.yaml
+
+  // Map a risk band to its pill CSS class.
+  function riskBandClass(band) {
+    const b = String(band || "").toLowerCase();
+    if (b === "low")      return "band-low";
+    if (b === "medium")   return "band-medium";
+    if (b === "high")     return "band-high";
+    if (b === "critical") return "band-critical";
+    return "unknown";
+  }
+
+  // Map a remediation status to its (subtle) pill CSS class.
+  function riskStatusClass(status) {
+    const s = String(status || "").toLowerCase().replace(/[\s_-]+/g, " ").trim();
+    if (s === "open")        return "status-open";
+    if (s === "in progress") return "status-in-progress";
+    if (s === "mitigated")   return "status-mitigated";
+    return "unknown";
+  }
+
+  // Resolve a friendly framework label for a risk's related control, reusing
+  // the app's normalizer; falls back to the raw string from the YAML.
+  function riskFrameworkLabel(rawFramework) {
+    const key = normalizeFramework(rawFramework);
+    return key ? labelFor(key, rawFramework) : (rawFramework || "");
+  }
+
+  // Render the collapsed summary row for one risk (head + hidden detail).
+  function renderRiskRow(risk, index) {
+    const ctrl    = risk.related_control || {};
+    const fwLabel = riskFrameworkLabel(ctrl.framework);
+    const band    = risk.risk_band || "";
+    const status  = risk.remediation_status || "";
+    const bandCls = riskBandClass(band);
+    const statCls = riskStatusClass(status);
+
+    const head =
+      '<div class="risk-row-head" role="button" tabindex="0" ' +
+           'aria-expanded="false" aria-controls="risk-detail-' + index + '">' +
+        '<span class="rr-id">' + escapeHtml(risk.risk_id) + '</span>' +
+        '<span class="rr-ctrl">' +
+          (fwLabel ? '<span class="rr-fw">' + escapeHtml(fwLabel) + '</span>' : '') +
+          (ctrl.id ? '<span class="rr-cid">' + escapeHtml(ctrl.id) + '</span>' : '') +
+        '</span>' +
+        '<span class="rr-score" title="Likelihood × Impact">' +
+          escapeHtml(risk.risk_score) +
+          '<span class="rr-score-cap">score</span>' +
+        '</span>' +
+        '<span class="pill ' + bandCls + '">' + escapeHtml(band) + '</span>' +
+        '<span class="pill ' + statCls + '">' + escapeHtml(status) + '</span>' +
+        '<span class="rr-chevron" aria-hidden="true">&#9654;</span>' +
+      '</div>';
+
+    const detail =
+      '<div class="risk-detail" id="risk-detail-' + index + '">' +
+
+        '<div class="map-section"><h4>Risk Description</h4>' +
+          '<p class="ctrl-desc">' + escapeHtml(risk.risk_description) + '</p></div>' +
+
+        '<div class="map-section"><h4>Assessment</h4>' +
+          '<div class="risk-meta-grid">' +
+            '<div class="risk-meta-box"><div class="rm-label">Likelihood</div>' +
+              '<div class="rm-value">' + escapeHtml(risk.likelihood) +
+              ' <span class="rm-sub">' + escapeHtml(risk.likelihood_label) + '</span></div></div>' +
+            '<div class="risk-meta-box"><div class="rm-label">Impact</div>' +
+              '<div class="rm-value">' + escapeHtml(risk.impact) +
+              ' <span class="rm-sub">' + escapeHtml(risk.impact_label) + '</span></div></div>' +
+            '<div class="risk-meta-box"><div class="rm-label">Risk Score</div>' +
+              '<div class="rm-value">' + escapeHtml(risk.risk_score) +
+              ' <span class="rm-sub">likelihood × impact</span></div></div>' +
+            '<div class="risk-meta-box"><div class="rm-label">Risk Band</div>' +
+              '<div class="rm-value"><span class="pill ' + bandCls + '">' +
+              escapeHtml(band) + '</span></div></div>' +
+          '</div></div>' +
+
+        '<div class="map-section"><h4>Ownership &amp; Timeline</h4>' +
+          '<div class="risk-meta-grid">' +
+            '<div class="risk-meta-box"><div class="rm-label">Risk Owner</div>' +
+              '<div class="rm-value">' + escapeHtml(risk.risk_owner) + '</div></div>' +
+            '<div class="risk-meta-box"><div class="rm-label">Target Remediation Date</div>' +
+              '<div class="rm-value">' + escapeHtml(risk.target_remediation_date) + '</div></div>' +
+            '<div class="risk-meta-box"><div class="rm-label">Remediation Status</div>' +
+              '<div class="rm-value"><span class="pill ' + statCls + '">' +
+              escapeHtml(status) + '</span></div></div>' +
+          '</div></div>' +
+
+        '<div class="map-section"><h4>Treatment</h4>' +
+          '<div class="remediation-box">' + escapeHtml(risk.treatment) + '</div></div>' +
+
+      '</div>';
+
+    return '<div class="risk-row band-left-' +
+             (bandCls === "unknown" ? "low" : bandCls.replace("band-", "")) +
+             '" data-idx="' + index + '">' + head + detail + '</div>';
+  }
+
+  // Toggle a single row open/closed (and keep ARIA in sync).
+  function toggleRiskRow(row) {
+    const isOpen = row.classList.toggle("open");
+    const head = row.querySelector(".risk-row-head");
+    if (head) head.setAttribute("aria-expanded", isOpen ? "true" : "false");
+  }
+
+  // Fetch the risk register, sort by score (desc), render, and wire row toggles.
+  async function loadRiskRegister() {
+    const out = document.getElementById("risk-results");
+    try {
+      const data  = await fetchYaml(RISK_URL);
+      const risks = (data && Array.isArray(data.risks)) ? data.risks.slice() : [];
+
+      // Sort by risk score descending; tie-break on risk_id ascending for stability.
+      risks.sort((a, b) =>
+        (Number(b.risk_score) || 0) - (Number(a.risk_score) || 0) ||
+        String(a.risk_id || "").localeCompare(String(b.risk_id || ""))
+      );
+      RISK_REGISTER = risks;
+
+      if (!risks.length) {
+        out.innerHTML = '<div class="hint">The risk register is empty.</div>';
+        return;
+      }
+
+      out.innerHTML =
+        '<p class="count-note">' + risks.length + ' risk' +
+          (risks.length === 1 ? '' : 's') + ', highest score first.</p>' +
+        '<div class="results">' +
+          risks.map((r, i) => renderRiskRow(r, i)).join("") +
+        '</div>';
+
+      // Wire expand/collapse via event delegation (click + keyboard).
+      out.querySelectorAll(".risk-row-head").forEach(head => {
+        const row = head.closest(".risk-row");
+        head.addEventListener("click", () => toggleRiskRow(row));
+        head.addEventListener("keydown", e => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            toggleRiskRow(row);
+          }
+        });
+      });
+    } catch (err) {
+      console.error(err);
+      out.innerHTML =
+        '<div class="error">' +
+          '<strong>Could not load risk-register data.</strong><br>' +
+          escapeHtml(err.message) + '<br><br>' +
+          'Data is fetched from <code>raw.githubusercontent.com</code>; ' +
+          'check your connection and try again.' +
+        '</div>';
+    }
+  }
+
+  /* ----------------------------------------------------------------
      10. BOOTSTRAP
      ---------------------------------------------------------------- */
   document.addEventListener("DOMContentLoaded", async () => {
@@ -1127,6 +1410,10 @@
     // Audit-readiness data loads independently (added): its own try/catch lives
     // inside loadAudit(), so it cannot block or break the three existing tabs.
     loadAudit();
+
+    // Risk-register data also loads independently (added): its own try/catch
+    // lives inside loadRiskRegister(), so it cannot affect any existing tab.
+    loadRiskRegister();
   });
   </script>
 </body>
