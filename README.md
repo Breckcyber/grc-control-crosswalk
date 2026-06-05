@@ -49,6 +49,43 @@ python src/crosswalk.py --audit "A.5.1"
 
 # List all controls that have an audit package
 python src/crosswalk.py --audit
+
+## Risk Register
+
+The tool turns control gaps into a structured, prioritized risk register — the core artifact of operational GRC. Risks are derived from the audit findings and scored on a 5x5 matrix.
+
+Each risk entry includes:
+- **Related control** — the framework control the risk maps to
+- **Likelihood and impact** — each scored 1-5 (Rare → Almost Certain, Insignificant → Severe)
+- **Risk score and band** — score = likelihood x impact (1-25), mapped to Low / Medium / High / Critical
+- **Risk owner** — the accountable role (e.g., CISO, AI Governance Lead, Vendor Risk Manager)
+- **Target remediation date** and **status** — Open, In Progress, or Mitigated
+- **Treatment** — the planned remediation
+
+### 5x5 risk matrix
+
+| Score | Band |
+|-------|------|
+| 1-4   | Low |
+| 5-9   | Medium |
+| 10-14 | High |
+| 15-25 | Critical |
+
+### CLI usage
+
+```bash
+# View risk entries for a control
+python src/crosswalk.py --risk "A.5.15"
+
+# View the full register, sorted highest-risk-first
+python src/crosswalk.py --risk
+```
+
+### Web interface
+
+The live tool includes a **Risk Register** tab showing the full register sorted by risk score (highest first), with color-coded band pills and expandable detail per risk.
+
+Entries are illustrative templates derived from audit findings; organizations populate the register with their own risks, owners, and dates.
 ```
 
 ### Web interface
@@ -140,7 +177,7 @@ Cross-framework mappings
 - [x] CLI lookup tool with 4 modes (lookup, search, framework dump, audit)
 - [x] Public web interface (live on GitHub Pages)
 - [x] Audit-readiness module (evidence, testing, pass/fail, findings, risk ratings, remediation) for 15 key controls
-- [ ] Risk register builder
+- [x] Risk register builder (5x5 matrix, scored & prioritized entries)
 - [ ] Downloadable Excel audit workbook
 - [ ] Expand audit coverage to all mapped controls
 - [ ] Roadmap: live AI generation via API
